@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # Next.js Application
+  streamplay-billing:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - SUPABASE_NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}SUPABASE_NEXT_PUBLIC_SUPABASE_ANON_KEY_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - STREAMPLAY_API_KEY=${STREAMPLAY_API_KEY}
+      - STREAMPLAY_WEBHOOK_SECRET=${STREAMPLAY_WEBHOOK_SECRET}
+      - STREAMPLAY_API_URL=${STREAMPLAY_API_URL}
+      - STREAMPLAY_API_TOKEN=${STREAMPLAY_API_TOKEN}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - streamplay-network
+
+  # PostgreSQL Database (if not using Supabase)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=streamplay_billing
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/billing_schema.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - streamplay-network
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - streamplay-network
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - streamplay-billing
+    networks:
+      - streamplay-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  streamplay-network:
+    driver: bridge
