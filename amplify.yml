@@ -3,9 +3,18 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm install --legacy-peer-deps
+        - export SKIP_DOWNLOAD_BINARY=1
+        - export NEXT_TELEMETRY_DISABLED=1
+        - export NEXT_SKIP_NATIVE_POSTINSTALL=1
+        - export SWC_BINARY_PATH=skip
+        - npm config set registry https://registry.npmjs.org/
+        - npm install --legacy-peer-deps --no-optional
     build:
       commands:
+        - export SKIP_DOWNLOAD_BINARY=1
+        - export NEXT_TELEMETRY_DISABLED=1
+        - export NEXT_SKIP_NATIVE_POSTINSTALL=1
+        - export SWC_BINARY_PATH=skip
         - npm run build
   artifacts:
     baseDirectory: .next

@@ -2,6 +2,10 @@
 const nextConfig = {
   serverExternalPackages: ['@supabase/supabase-js'],
   output: 'standalone',
+  experimental: {
+    // Skip SWC to avoid binary issues
+    forceSwcTransforms: false,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
