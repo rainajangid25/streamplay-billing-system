@@ -157,52 +157,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                  <Zap className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  BillChain AI
-                </span>
-              </div>
-              <SyncIndicator />
-              <DataFreshnessIndicator dataType="customers" />
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                <Database className="h-3 w-3 mr-1" />
-                Cache: {cacheStatus}
-              </Badge>
-              {(billingLoading || nftLoading || aiLoading || blockchainLoading) && (
-                <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                  <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-                  Loading...
-                </Badge>
-              )}
-            </div>
-            <nav className="flex space-x-4">
-              <Link href="/customers">
-                <Button variant="ghost">Customers</Button>
-              </Link>
-              <Link href="/billing">
-                <Button variant="ghost">Billing</Button>
-              </Link>
-              <Link href="/blockchain">
-                <Button variant="ghost">Web3</Button>
-              </Link>
-              <Link href="/ai-insights">
-                <Button variant="ghost">AI Insights</Button>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100 p-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Next-Generation Billing Platform</h1>
           <p className="text-gray-600">Cloud-Native & Web3 Hybrid • API-First • Smart Contract-Driven • AI-Powered</p>
@@ -674,7 +629,6 @@ export default function HomePage() {
             </div>
           </TabsContent>
         </Tabs>
-      </main>
     </div>
   )
 }

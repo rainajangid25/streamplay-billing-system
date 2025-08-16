@@ -88,8 +88,10 @@ export function LayoutWrapper({ children, defaultOpen }: LayoutWrapperProps) {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <main className="flex-1 overflow-hidden">
-          {children}
+        <main className="flex-1 overflow-auto p-0">
+          <div className="h-full">
+            {children}
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>
