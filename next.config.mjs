@@ -8,10 +8,12 @@ const nextConfig = {
   },
   // Ensure proper module resolution for Babel compilation
   webpack: (config, { dev, isServer }) => {
-    // Ensure @ alias is working properly
+    // Ensure @ alias is working properly with current directory
+    const currentDir = process.cwd();
+    
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': process.cwd(),
+      '@': currentDir,
     };
     
     return config;
