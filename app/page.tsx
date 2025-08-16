@@ -80,16 +80,19 @@ export default function HomePage() {
     ],
   }
 
-  // Calculate real-time metrics from store data
+  // Calculate real-time metrics from store data with safe array handling
   const realTimeBillingMetrics = {
     ...defaultBillingMetrics,
-    totalRevenue: customers.length > 0 ? 
+    totalRevenue: (customers && customers.length > 0) ? 
       Math.max(customers.reduce((sum, c) => sum + (c.total_spent || 0), 0), defaultBillingMetrics.totalRevenue) :
       defaultBillingMetrics.totalRevenue,
-    activeSubscriptions: subscriptions.filter(s => s.status === 'active').length || defaultBillingMetrics.nftSubscriptions,
-    totalCustomers: customers.length,
-    totalInvoices: invoices.length,
-    activeProducts: products.filter(p => p.is_active).length || products.length
+    activeSubscriptions: (subscriptions && subscriptions.length > 0) ? 
+      subscriptions.filter(s => s.status === 'active').length : 
+      defaultBillingMetrics.nftSubscriptions,
+    totalCustomers: customers ? customers.length : 0,
+    totalInvoices: invoices ? invoices.length : 0,
+    activeProducts: (products && products.length > 0) ? 
+      products.filter(p => p.is_active).length : 0
   }
   
   const billingMetrics = billingData || realTimeBillingMetrics
@@ -310,7 +313,7 @@ export default function HomePage() {
                         fill="#8884d8"
                         dataKey="volume"
                       >
-                        {billingMetrics.paymentMethods.map((entry, index) => (
+                        {(billingMetrics.paymentMethods || []).map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
@@ -363,7 +366,7 @@ export default function HomePage() {
 
           <TabsContent value="nft" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {nftPasses.map((nft: any) => (
+              {(nftPasses || []).map((nft: any) => (
                 <Card key={nft.id} className="border-2 border-purple-200 hover:border-purple-400 transition-colors">
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -400,7 +403,7 @@ export default function HomePage() {
                       <div className="space-y-2">
                         <h4 className="font-semibold text-sm">Access Benefits:</h4>
                         <ul className="space-y-1">
-                          {nft.benefits.map((benefit: string, index: number) => (
+                          {(nft.benefits || []).map((benefit: string, index: number) => (
                             <li key={index} className="text-xs text-gray-600 flex items-center gap-2">
                               <CheckCircle className="h-3 w-3 text-green-500" />
                               {benefit}
@@ -466,7 +469,7 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {regionalPricing.map((region, index) => (
+                    {(regionalPricing || []).map((region, index) => (
                       <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -586,7 +589,7 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {aiRetryMetrics.patterns.map((pattern, index) => (
+                    {(aiRetryMetrics.patterns || []).map((pattern, index) => (
                       <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
@@ -648,7 +651,7 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {cacheMetrics.regions.map((region, index) => (
+                    {(cacheMetrics.regions || []).map((region, index) => (
                       <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
