@@ -10,7 +10,11 @@ frontend:
         - npm config set registry https://registry.npmjs.org/
         - npm install --legacy-peer-deps --no-optional
         - mkdir -p node_modules/@next/swc-linux-x64-gnu
+        - mkdir -p /root/.cache/next-swc
+        - mkdir -p .next-swc
         - echo "// Mock SWC binary" > node_modules/@next/swc-linux-x64-gnu/next-swc.linux-x64-gnu.node
+        - echo "// Mock SWC binary" > /root/.cache/next-swc/next-swc.linux-x64-gnu.node
+        - echo "// Mock SWC binary" > .next-swc/next-swc.linux-x64-gnu.node
     build:
       commands:
         - export SKIP_DOWNLOAD_BINARY=1

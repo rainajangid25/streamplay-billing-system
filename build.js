@@ -11,9 +11,16 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Create a mock SWC binary to prevent downloads
-const mockSwcDir = path.join(process.cwd(), 'node_modules', '@next', 'swc-linux-x64-gnu');
-const mockSwcFile = path.join(mockSwcDir, 'next-swc.linux-x64-gnu.node');
+// Create mock SWC binaries in multiple locations to prevent downloads
+const mockLocations = [
+  // Standard node_modules location
+  path.join(process.cwd(), 'node_modules', '@next', 'swc-linux-x64-gnu'),
+  // Cache location that AWS is trying to use
+  '/root/.cache/next-swc',
+  // Alternative cache locations
+  path.join(process.cwd(), '.next-swc'),
+  path.join(process.cwd(), 'node_modules', '.cache', 'next-swc')
+];
 
 try {
   console.log('Starting Next.js build with SWC bypass...');
@@ -22,12 +29,22 @@ try {
   console.log('- NEXT_TELEMETRY_DISABLED:', process.env.NEXT_TELEMETRY_DISABLED);
   console.log('- NEXT_SKIP_SWC:', process.env.NEXT_SKIP_SWC);
   
-  // Create mock SWC directory and file to prevent download
-  if (!fs.existsSync(mockSwcDir)) {
-    fs.mkdirSync(mockSwcDir, { recursive: true });
-  }
-  if (!fs.existsSync(mockSwcFile)) {
-    fs.writeFileSync(mockSwcFile, '// Mock SWC binary to prevent download');
+  // Create mock SWC directories and files in all potential locations
+  for (const mockDir of mockLocations) {
+    try {
+      if (!fs.existsSync(mockDir)) {
+        fs.mkdirSync(mockDir, { recursive: true });
+        console.log('Created mock directory:', mockDir);
+      }
+      
+      const mockFile = path.join(mockDir, 'next-swc.linux-x64-gnu.node');
+      if (!fs.existsSync(mockFile)) {
+        fs.writeFileSync(mockFile, '// Mock SWC binary to prevent download');
+        console.log('Created mock SWC binary:', mockFile);
+      }
+    } catch (err) {
+      console.log('Could not create mock in:', mockDir, err.message);
+    }
   }
   
   execSync('npx next build', { 
