@@ -6,6 +6,16 @@ const nextConfig = {
   experimental: {
     forceSwcTransforms: false,
   },
+  // Ensure proper module resolution for Babel compilation
+  webpack: (config, { dev, isServer }) => {
+    // Ensure @ alias is working properly
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': '.',
+    };
+    
+    return config;
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
