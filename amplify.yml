@@ -7,6 +7,8 @@ frontend:
         - export NEXT_TELEMETRY_DISABLED=1
         - export NEXT_SKIP_NATIVE_POSTINSTALL=1
         - export SWC_BINARY_PATH=skip
+        - export NEXT_SWC_PATH=skip
+        - export SWC_SKIP_DOWNLOAD=1
         - npm config set registry https://registry.npmjs.org/
         - npm install --legacy-peer-deps --no-optional
     build:
@@ -15,7 +17,9 @@ frontend:
         - export NEXT_TELEMETRY_DISABLED=1
         - export NEXT_SKIP_NATIVE_POSTINSTALL=1
         - export SWC_BINARY_PATH=skip
-        - npm run build
+        - export NEXT_SWC_PATH=skip
+        - export SWC_SKIP_DOWNLOAD=1
+        - node build.js
   artifacts:
     baseDirectory: .next
     files:

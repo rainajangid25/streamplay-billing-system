@@ -2,9 +2,18 @@
 const nextConfig = {
   serverExternalPackages: ['@supabase/supabase-js'],
   output: 'standalone',
+  swcMinify: false,
   experimental: {
     // Skip SWC to avoid binary issues
     forceSwcTransforms: false,
+    esmExternals: 'loose',
+  },
+  webpack: (config, { isServer }) => {
+    // Force webpack to use native Node.js modules
+    if (isServer) {
+      config.externals = [...(config.externals || []), '@swc/core'];
+    }
+    return config;
   },
   eslint: {
     ignoreDuringBuilds: true,
