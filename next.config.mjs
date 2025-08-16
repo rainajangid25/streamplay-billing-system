@@ -9,10 +9,19 @@ const nextConfig = {
     esmExternals: 'loose',
   },
   webpack: (config, { isServer }) => {
-    // Force webpack to use native Node.js modules
+    // Force webpack to use native Node.js modules and disable SWC
     if (isServer) {
       config.externals = [...(config.externals || []), '@swc/core'];
     }
+    
+    // Force use of Babel instead of SWC
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@next/swc-linux-x64-gnu': false,
+      '@next/swc-linux-x64-musl': false,
+      '@next/swc': false
+    };
+    
     return config;
   },
   eslint: {
