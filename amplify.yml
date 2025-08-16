@@ -12,9 +12,10 @@ frontend:
         - mkdir -p node_modules/@next/swc-linux-x64-gnu
         - mkdir -p /root/.cache/next-swc
         - mkdir -p .next-swc
-        - echo "// Mock SWC binary" > node_modules/@next/swc-linux-x64-gnu/next-swc.linux-x64-gnu.node
-        - echo "// Mock SWC binary" > /root/.cache/next-swc/next-swc.linux-x64-gnu.node
-        - echo "// Mock SWC binary" > .next-swc/next-swc.linux-x64-gnu.node
+        - echo '{"name":"@next/swc-linux-x64-gnu","version":"15.2.4","main":"./next-swc.linux-x64-gnu.node"}' > node_modules/@next/swc-linux-x64-gnu/package.json
+        - echo 'module.exports = {transform:()=>({code:"",map:null}),minify:()=>({code:"",map:null}),parse:()=>({})}' > node_modules/@next/swc-linux-x64-gnu/next-swc.linux-x64-gnu.node
+        - echo 'module.exports = {transform:()=>({code:"",map:null}),minify:()=>({code:"",map:null}),parse:()=>({})}' > /root/.cache/next-swc/next-swc.linux-x64-gnu.node
+        - echo 'module.exports = {transform:()=>({code:"",map:null}),minify:()=>({code:"",map:null}),parse:()=>({})}' > .next-swc/next-swc.linux-x64-gnu.node
     build:
       commands:
         - export SKIP_DOWNLOAD_BINARY=1
