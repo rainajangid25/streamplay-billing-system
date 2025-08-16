@@ -1,12 +1,9 @@
 import './globals.css'
 import type { ReactNode } from 'react'
-import { Inter } from 'next/font/google'
 import { cookies } from 'next/headers'
 import { LayoutWrapper } from '@/components/layout-wrapper'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'StreamPlay Billing - Smart Subscription Management',
@@ -21,7 +18,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className="font-sans">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <LayoutWrapper defaultOpen={defaultOpen}>
             {children}

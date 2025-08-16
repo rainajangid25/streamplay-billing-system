@@ -2,10 +2,9 @@
 const nextConfig = {
   output: 'standalone',
   swcMinify: false,
+  // Minimal config to work without SWC
   experimental: {
-    // Skip SWC completely
-    swcLoader: false,
-    swcMinify: false,
+    forceSwcTransforms: false,
   },
   eslint: {
     ignoreDuringBuilds: true,
