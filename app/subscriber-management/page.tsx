@@ -440,8 +440,7 @@ export default function SubscriberManagementPage() {
   const averageLifetimeValue = enhancedCustomers.reduce((sum, c) => sum + (c.lifetimeValue || 0), 0) / totalCustomers || 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <main className="max-w-7xl mx-auto px-6 py-8">
+    <div className="min-h-full bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
         {/* Enhanced Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-6">
@@ -1354,7 +1353,6 @@ export default function SubscriberManagementPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </main>
     </div>
   )
 }
