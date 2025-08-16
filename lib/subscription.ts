@@ -61,3 +61,16 @@ export const formatPrice = (amount: number, currency: string = 'USD'): string =>
     currency: currency,
   }).format(amount)
 }
+
+// Missing exports for app components
+export class SubscriptionService {
+  static async getSubscriptions() {
+    return []
+  }
+}
+
+export class SubscriptionAnalytics {
+  static async getAnalytics() {
+    return {}
+  }
+}

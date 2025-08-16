@@ -57,6 +57,9 @@ export const formatCryptoAddress = (address: string): string => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
+// Missing export alias
+export const PaymentService = PaymentClient
+
 export class PaymentClient {
   static async createPaymentIntent(amount: number, currency: string, customer_id: string): Promise<PaymentIntent> {
     // Mock implementation

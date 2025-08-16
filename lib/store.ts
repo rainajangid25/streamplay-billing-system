@@ -51,3 +51,9 @@ export const useBillingStore = create<BillingState>((set) => ({
   setLoadingTransactions: (isLoadingTransactions) => set({ isLoadingTransactions }),
   setLoadingSubscriptions: (isLoadingSubscriptions) => set({ isLoadingSubscriptions }),
 }))
+
+// Missing export for customer data
+export const useCustomerData = () => {
+  const user = useAppStore(state => state.user)
+  return user
+}

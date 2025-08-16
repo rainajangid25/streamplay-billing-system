@@ -57,6 +57,9 @@ export const emailTemplates: EmailTemplate[] = [
   }
 ]
 
+// Missing export alias
+export const emailService = new EmailClient()
+
 export class EmailClient {
   static async sendEmail(notification: EmailNotification): Promise<boolean> {
     try {
