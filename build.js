@@ -82,30 +82,7 @@ module.exports = {
     console.log('Could not create @next package:', err.message);
   }
   
-  // Also create the WASM fallback that Next.js is now trying to use
-  const wasmSwcDir = '/root/.cache/next-swc';
-  try {
-    if (!fs.existsSync(wasmSwcDir)) {
-      fs.mkdirSync(wasmSwcDir, { recursive: true });
-    }
-    // Create the WASM package that Next.js is trying to download
-    const wasmPackageContent = JSON.stringify({
-      name: '@next/swc-wasm-nodejs',
-      version: '15.2.4',
-      main: './next-swc.wasm.js'
-    }, null, 2);
-    fs.writeFileSync(path.join(wasmSwcDir, 'package.json'), wasmPackageContent);
-    fs.writeFileSync(path.join(wasmSwcDir, 'next-swc.wasm.js'), `
-// Mock WASM SWC for Next.js fallback
-module.exports = {
-  transform: (code, options) => Promise.resolve({ code, map: null }),
-  minify: (code, options) => Promise.resolve({ code, map: null }),
-  parse: (code, options) => Promise.resolve({}),
-};`);
-    console.log('Created WASM fallback package');
-  } catch (err) {
-    console.log('Could not create WASM package:', err.message);
-  }
+  console.log('Real WASM package should be installed via npm during preBuild phase');
   
   execSync('npx next build', { 
     stdio: 'inherit',

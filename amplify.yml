@@ -9,14 +9,10 @@ frontend:
         - export NEXT_SKIP_SWC=1
         - npm config set registry https://registry.npmjs.org/
         - npm install --legacy-peer-deps --no-optional
+        - npm install @next/swc-wasm-nodejs@15.2.4 --legacy-peer-deps --save-dev
         - mkdir -p node_modules/@next/swc-linux-x64-gnu
-        - mkdir -p /root/.cache/next-swc
-        - mkdir -p .next-swc
         - echo '{"name":"@next/swc-linux-x64-gnu","version":"15.2.4","main":"./next-swc.linux-x64-gnu.node"}' > node_modules/@next/swc-linux-x64-gnu/package.json
         - echo 'module.exports = {transform:()=>({code:"",map:null}),minify:()=>({code:"",map:null}),parse:()=>({})}' > node_modules/@next/swc-linux-x64-gnu/next-swc.linux-x64-gnu.node
-        - echo '{"name":"@next/swc-wasm-nodejs","version":"15.2.4","main":"./next-swc.wasm.js"}' > /root/.cache/next-swc/package.json
-        - echo 'module.exports = {transform:(code,options)=>Promise.resolve({code,map:null}),minify:(code,options)=>Promise.resolve({code,map:null}),parse:(code,options)=>Promise.resolve({})}' > /root/.cache/next-swc/next-swc.wasm.js
-        - echo 'module.exports = {transform:()=>({code:"",map:null}),minify:()=>({code:"",map:null}),parse:()=>({})}' > .next-swc/next-swc.linux-x64-gnu.node
     build:
       commands:
         - export SKIP_DOWNLOAD_BINARY=1
