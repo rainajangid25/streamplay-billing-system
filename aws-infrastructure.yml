@@ -286,9 +286,9 @@ Resources:
             - Name: PORT
               Value: "3000"
           Secrets:
-            - Name: SUPABASE_NEXT_PUBLIC_SUPABASE_URL
+            - Name: NEXT_PUBLIC_SUPABASE_URL
               ValueFrom: !Ref SupabaseUrlSecret
-           SUPABASE_NEXT_PUBLIC_SUPABASE_ANON_KEY_ANON_KEY
+           NEXT_PUBLIC_SUPABASE_ANON_KEY
               ValueFrom: !Ref SupabaseAnonKeySecret
             - Name: SUPABASE_SERVICE_ROLE_KEY
               ValueFrom: !Ref SupabaseServiceRoleKeySecret

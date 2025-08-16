@@ -146,12 +146,12 @@ update_secrets() {
     # Update secrets
     aws secretsmanager update-secret \
         --secret-id "streamplay/$ENVIRONMENT/supabase-url" \
-        --secret-string "{\"SUPABASE_NEXT_PUBLIC_SUPABASE_URL\":\"$NEXT_PUBLIC_SUPABASE_URL\"}" \
+        --secret-string "{\"NEXT_PUBLIC_SUPABASE_URL\":\"$NEXT_PUBLIC_SUPABASE_URL\"}" \
         --region $AWS_REGION || print_warning "Failed to update Supabase URL secret"
     
     aws secretsmanager update-secret \
         --secret-id "streamplay/$ENVIRONMENT/supabase-anon-key" \
-        --secret-stSUPABASE_NEXT_PUBLIC_SUPABASE_ANON_KEY_ANON_KEY\":\"$NEXT_PUBLIC_SUPABASE_ANON_KEY\"}" \
+        --secret-NEXT_PUBLIC_SUPABASE_ANON_KEY\":\"$NEXT_PUBLIC_SUPABASE_ANON_KEY\"}" \
         --region $AWS_REGION || print_warning "Failed to update Supabase anon key secret"
     
     aws secretsmanager update-secret \
