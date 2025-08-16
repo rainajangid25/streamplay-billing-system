@@ -6,19 +6,17 @@ frontend:
         - export SKIP_DOWNLOAD_BINARY=1
         - export NEXT_TELEMETRY_DISABLED=1
         - export NEXT_SKIP_NATIVE_POSTINSTALL=1
-        - export SWC_BINARY_PATH=skip
-        - export NEXT_SWC_PATH=skip
-        - export SWC_SKIP_DOWNLOAD=1
+        - export NEXT_SKIP_SWC=1
         - npm config set registry https://registry.npmjs.org/
         - npm install --legacy-peer-deps --no-optional
+        - mkdir -p node_modules/@next/swc-linux-x64-gnu
+        - echo "// Mock SWC binary" > node_modules/@next/swc-linux-x64-gnu/next-swc.linux-x64-gnu.node
     build:
       commands:
         - export SKIP_DOWNLOAD_BINARY=1
         - export NEXT_TELEMETRY_DISABLED=1
         - export NEXT_SKIP_NATIVE_POSTINSTALL=1
-        - export SWC_BINARY_PATH=skip
-        - export NEXT_SWC_PATH=skip
-        - export SWC_SKIP_DOWNLOAD=1
+        - export NEXT_SKIP_SWC=1
         - node build.js
   artifacts:
     baseDirectory: .next
