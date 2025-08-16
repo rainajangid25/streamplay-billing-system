@@ -88,8 +88,9 @@ export function LayoutWrapper({ children, defaultOpen }: LayoutWrapperProps) {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <main className="flex-1 overflow-auto p-0">
-          <div className="h-full">
+        <main className="flex-1 overflow-auto p-0 bg-yellow-200" style={{ minHeight: '500px', display: 'block' }}>
+          <div className="h-full bg-green-200 p-4" style={{ minHeight: '400px' }}>
+            <p className="text-black font-bold bg-white p-2 border-2 border-red-500">🔥 DEBUG: Layout Wrapper Main Content Area - Children should appear below this line</p>
             {children}
           </div>
         </main>

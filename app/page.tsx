@@ -157,10 +157,11 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Next-Generation Billing Platform</h1>
+    <div className="min-h-full bg-red-100 p-6" style={{ minHeight: '100vh', display: 'block', visibility: 'visible' }}>
+        <div className="mb-8 bg-blue-100 p-4 border-2 border-black">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">🔥 DEBUG: Next-Generation Billing Platform</h1>
           <p className="text-gray-600">Cloud-Native & Web3 Hybrid • API-First • Smart Contract-Driven • AI-Powered</p>
+          <p className="text-red-600 font-bold">DEBUG: If you can see this, the homepage is rendering correctly!</p>
         </div>
 
         {/* Key Metrics Overview */}
