@@ -26,7 +26,7 @@ export function SyncIndicator() {
   }, [])
   
   useEffect(() => {
-    const hasActiveLoading = Object.values(isLoading).some(loading => loading)
+    const hasActiveLoading = isLoading ? Object.values(isLoading).some(loading => loading) : false
     if (hasActiveLoading && isOnline) {
       setSyncStatus('syncing')
     } else if (isOnline) {
@@ -35,6 +35,10 @@ export function SyncIndicator() {
   }, [isLoading, isOnline])
   
   const getLastUpdateTime = () => {
+    if (!lastUpdated || Object.keys(lastUpdated).length === 0) {
+      return 'Just now'
+    }
+    
     const latest = Math.max(...Object.values(lastUpdated))
     const diff = Date.now() - latest
     const minutes = Math.floor(diff / 60000)
@@ -78,8 +82,8 @@ export function SyncIndicator() {
 export function DataFreshnessIndicator({ dataType }: { dataType: 'customers' | 'subscriptions' | 'products' | 'invoices' }) {
   const { lastUpdated, isLoading } = useBillingStore()
   
-  const isDataLoading = isLoading[dataType]
-  const lastUpdate = lastUpdated[dataType]
+  const isDataLoading = isLoading ? isLoading[dataType] : false
+  const lastUpdate = lastUpdated ? lastUpdated[dataType] || Date.now() : Date.now()
   
   const getTimeSinceUpdate = () => {
     const diff = Date.now() - lastUpdate

@@ -33,23 +33,73 @@ export const useAppStore = create<AppState>((set) => ({
 export interface BillingState {
   transactions: any[]
   subscriptions: any[]
+  customers: any[]
+  invoices: any[]
+  products: any[]
+  isLoading: {
+    customers: boolean
+    subscriptions: boolean
+    products: boolean
+    invoices: boolean
+    transactions: boolean
+  }
+  lastUpdated: {
+    customers: number
+    subscriptions: number
+    products: number
+    invoices: number
+    transactions: number
+  }
   isLoadingTransactions: boolean
   isLoadingSubscriptions: boolean
   setTransactions: (transactions: any[]) => void
   setSubscriptions: (subscriptions: any[]) => void
+  setCustomers: (customers: any[]) => void
+  setInvoices: (invoices: any[]) => void
+  setProducts: (products: any[]) => void
   setLoadingTransactions: (loading: boolean) => void
   setLoadingSubscriptions: (loading: boolean) => void
+  setLoading: (type: string, loading: boolean) => void
+  updateLastUpdated: (type: string) => void
 }
 
-export const useBillingStore = create<BillingState>((set) => ({
+export const useBillingStore = create<BillingState>((set, get) => ({
   transactions: [],
   subscriptions: [],
+  customers: [],
+  invoices: [],
+  products: [],
+  isLoading: {
+    customers: false,
+    subscriptions: false,
+    products: false,
+    invoices: false,
+    transactions: false
+  },
+  lastUpdated: {
+    customers: Date.now(),
+    subscriptions: Date.now(),
+    products: Date.now(),
+    invoices: Date.now(),
+    transactions: Date.now()
+  },
   isLoadingTransactions: false,
   isLoadingSubscriptions: false,
   setTransactions: (transactions) => set({ transactions }),
   setSubscriptions: (subscriptions) => set({ subscriptions }),
+  setCustomers: (customers) => set({ customers }),
+  setInvoices: (invoices) => set({ invoices }),
+  setProducts: (products) => set({ products }),
   setLoadingTransactions: (isLoadingTransactions) => set({ isLoadingTransactions }),
   setLoadingSubscriptions: (isLoadingSubscriptions) => set({ isLoadingSubscriptions }),
+  setLoading: (type: string, loading: boolean) => {
+    const currentLoading = get().isLoading
+    set({ isLoading: { ...currentLoading, [type]: loading } })
+  },
+  updateLastUpdated: (type: string) => {
+    const currentLastUpdated = get().lastUpdated
+    set({ lastUpdated: { ...currentLastUpdated, [type]: Date.now() } })
+  }
 }))
 
 // Missing export for customer data
