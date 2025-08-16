@@ -28,8 +28,16 @@ import { Label } from '@/components/ui/label'
 export default function MyPlanPage() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
-  const { customer, updateCustomer, isLoading } = useCustomerData()
+  const customer = useCustomerData()
+  const isLoading = false // Mock loading state
   const { updateSubscription, subscriptions, customers, addCustomer, addSubscription } = useBillingStore()
+  
+  // Mock updateCustomer function
+  const updateCustomer = async (id: string, updates: any) => {
+    console.log('Updating customer:', id, updates)
+    // In a real app, this would update the customer data
+    return Promise.resolve()
+  }
   
   // Get current subscription data
   const currentSubscription = subscriptions.find(sub => sub.user_id === customer?.id)

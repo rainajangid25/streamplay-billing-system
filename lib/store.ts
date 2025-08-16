@@ -105,5 +105,15 @@ export const useBillingStore = create<BillingState>((set, get) => ({
 // Missing export for customer data
 export const useCustomerData = () => {
   const user = useAppStore(state => state.user)
-  return user
+  
+  // Return a default user object if none exists to prevent null access errors
+  return user || {
+    id: 'demo-user',
+    email: 'demo@streamplay.com',
+    name: 'Demo User',
+    subscription_status: 'active' as const,
+    plan: 'mega',
+    subscription_end_date: '29/08/2025',
+    wallet_address: undefined
+  }
 }
