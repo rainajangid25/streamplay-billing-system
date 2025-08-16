@@ -11,7 +11,7 @@ const nextConfig = {
     // Ensure @ alias is working properly
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': '.',
+      '@': process.cwd(),
     };
     
     return config;
