@@ -93,6 +93,9 @@ export interface BillingState {
   addCustomer: (customer: any) => void
   updateCustomer: (id: string, updates: any) => void
   removeCustomer: (id: string) => void
+  addSubscription: (subscription: any) => void
+  updateSubscription: (id: string, updates: any) => void
+  removeSubscription: (id: string) => void
 }
 
 // Sample customer data for demonstration
@@ -248,6 +251,25 @@ export const useBillingStore = create<BillingState>()(
     const currentCustomers = get().customers
     set({ customers: currentCustomers.filter(c => c.id !== id) })
     get().updateLastUpdated('customers')
+  },
+  addSubscription: (subscription: any) => {
+    const currentSubscriptions = get().subscriptions
+    set({ subscriptions: [...currentSubscriptions, subscription] })
+    get().updateLastUpdated('subscriptions')
+  },
+  updateSubscription: (id: string, updates: any) => {
+    const currentSubscriptions = get().subscriptions
+    set({ 
+      subscriptions: currentSubscriptions.map(s => 
+        s.id === id ? { ...s, ...updates } : s
+      ) 
+    })
+    get().updateLastUpdated('subscriptions')
+  },
+  removeSubscription: (id: string) => {
+    const currentSubscriptions = get().subscriptions
+    set({ subscriptions: currentSubscriptions.filter(s => s.id !== id) })
+    get().updateLastUpdated('subscriptions')
   }
     }),
     {

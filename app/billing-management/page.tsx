@@ -34,6 +34,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import { useBillingStore, useCurrentCustomer } from "@/lib/store"
 import {
   FileText,
   DollarSign,
@@ -74,6 +75,8 @@ const STORAGE_KEY = "billing-system-invoices"
 export default function BillingPage() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
+  const { customers, subscriptions } = useBillingStore()
+  const { customer: currentCustomer } = useCurrentCustomer()
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -451,8 +454,8 @@ export default function BillingPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Billing Management</h1>
-        <p className="text-gray-600">Manage invoices, payments, and financial operations</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">GoBill AI - Billing Management</h1>
+        <p className="text-gray-600">AI-powered billing and financial operations management</p>
       </div>
 
       <Card className="mb-6">
@@ -499,12 +502,11 @@ export default function BillingPage() {
                               <SelectValue placeholder="Select customer" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="John Smith">John Smith</SelectItem>
-                              <SelectItem value="Sarah Johnson">Sarah Johnson</SelectItem>
-                              <SelectItem value="Mike Chen">Mike Chen</SelectItem>
-                              <SelectItem value="Emily Davis">Emily Davis</SelectItem>
-                              <SelectItem value="David Wilson">David Wilson</SelectItem>
-                              <SelectItem value="Lisa Anderson">Lisa Anderson</SelectItem>
+                              {customers.map(customer => (
+                                <SelectItem key={customer.id} value={customer.name}>
+                                  {customer.name} ({customer.email})
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           {formErrors.customer && <p className="text-sm text-red-600">{formErrors.customer}</p>}
@@ -673,7 +675,9 @@ export default function BillingPage() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$2,847,392</div>
+              <div className="text-2xl font-bold">
+                ₹{customers.reduce((sum, c) => sum + (c.total_spent || 0), 0).toLocaleString()}
+              </div>
               <p className="text-xs text-muted-foreground">
                 <span className="text-green-600">+12.5%</span> from last month
               </p>
@@ -1208,12 +1212,11 @@ export default function BillingPage() {
                       <SelectValue placeholder="Select customer" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="John Smith">John Smith</SelectItem>
-                      <SelectItem value="Sarah Johnson">Sarah Johnson</SelectItem>
-                      <SelectItem value="Mike Chen">Mike Chen</SelectItem>
-                      <SelectItem value="Emily Davis">Emily Davis</SelectItem>
-                      <SelectItem value="David Wilson">David Wilson</SelectItem>
-                      <SelectItem value="Lisa Anderson">Lisa Anderson</SelectItem>
+                      {customers.map(customer => (
+                        <SelectItem key={customer.id} value={customer.name}>
+                          {customer.name} ({customer.email})
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   {formErrors.customer && <p className="text-sm text-red-600">{formErrors.customer}</p>}

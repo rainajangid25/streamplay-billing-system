@@ -30,7 +30,7 @@ export default function MyPlanPage() {
   const searchParams = useSearchParams()
   const customer = useCustomerData()
   const { customer: fullCustomer, updateCustomer, isLoading } = useCurrentCustomer()
-  const { updateSubscription, subscriptions, customers, addCustomer, addSubscription } = useBillingStore()
+  const { updateSubscription, subscriptions, customers, addCustomer, addSubscription, updateCustomer: updateCustomerInStore } = useBillingStore()
   
   // Get current subscription data
   const currentSubscription = subscriptions.find(sub => sub.user_id === customer?.id)
@@ -159,8 +159,9 @@ export default function MyPlanPage() {
       
       // Update customer status
       if (customer) {
-        updateCustomer(customer.id, {
-          subscription_status: 'paused'
+        updateCustomerInStore(customer.id, {
+          subscription_status: 'paused',
+          status: 'paused'
         })
       }
 
@@ -212,8 +213,9 @@ export default function MyPlanPage() {
       
       // Update customer status
       if (customer) {
-        updateCustomer(customer.id, {
-          subscription_status: 'cancelled'
+        updateCustomerInStore(customer.id, {
+          subscription_status: 'cancelled',
+          status: 'cancelled'
         })
       }
 
@@ -389,8 +391,8 @@ export default function MyPlanPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">My Plan</h1>
-            <p className="text-gray-300">Manage your subscription and streaming services</p>
+            <h1 className="text-4xl font-bold text-white mb-2">StreamPlay Billing Hub</h1>
+            <p className="text-gray-300">Manage your StreamPlay subscription and streaming services</p>
           </div>
           <div className="flex items-center space-x-4">
             <Badge variant="secondary" className="bg-green-100 text-green-800 px-3 py-1">

@@ -115,11 +115,8 @@ export default function ChangePlanPage() {
     const plan = plans.find(p => p.id === selectedPlan)
     const { price } = getPrice(plan!)
     
-    // Generate or get customer ID (in real app, this would come from auth)
-    const customerId = 'cust_' + Math.random().toString(36).substr(2, 9)
-    
-    // Navigate to user-specific billing page
-    router.push(`/customer-billing/${customerId}?plan=${selectedPlan}&price=${price}&billing=${billingCycle}`)
+    // Navigate to billing management page with plan details
+    router.push(`/billing-management?plan=${selectedPlan}&price=${price}&billing=${billingCycle}`)
   }
 
   return (
@@ -135,8 +132,8 @@ export default function ChangePlanPage() {
               </Button>
             </Link>
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">Choose Your Plan</h1>
-              <p className="text-gray-300">Select the perfect plan for your streaming needs</p>
+              <h1 className="text-4xl font-bold text-white mb-2">StreamPlay - Choose Your Plan</h1>
+              <p className="text-gray-300">Select the perfect StreamPlay plan for your streaming needs</p>
             </div>
           </div>
           

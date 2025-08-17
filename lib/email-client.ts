@@ -113,4 +113,37 @@ export class EmailClient {
   static getAllTemplates(): EmailTemplate[] {
     return emailTemplates
   }
+
+  async sendAdminNotification(message: string, priority: string = 'medium'): Promise<{ status: string; message?: string }> {
+    try {
+      // Mock implementation - in real app, send to admin email
+      console.log(`Admin Notification [${priority.toUpperCase()}]: ${message}`)
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      return { status: 'success' }
+    } catch (error) {
+      console.error('Failed to send admin notification:', error)
+      return { status: 'error', message: 'Failed to send notification' }
+    }
+  }
+
+  async sendCancellationConfirmation(email: string, name: string, endDate: string): Promise<{ status: string; message?: string }> {
+    try {
+      // Mock implementation - in real app, send cancellation email
+      console.log(`Cancellation confirmation sent to ${email} for ${name}, service ends ${endDate}`)
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      return { status: 'success' }
+    } catch (error) {
+      console.error('Failed to send cancellation confirmation:', error)
+      return { status: 'error', message: 'Failed to send confirmation' }
+    }
+  }
 }
+
+// Export a singleton instance
+export const emailService = new EmailClient()
