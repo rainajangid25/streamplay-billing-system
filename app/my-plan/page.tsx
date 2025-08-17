@@ -66,18 +66,30 @@ export default function MyPlanPage() {
   const [pauseReason, setPauseReason] = useState('')
   const [cancelReason, setCancelReason] = useState('')
 
-  // Profile update function
+  // Profile update function - get values from DOM inputs
   const handleProfileUpdate = async () => {
     try {
-      await updateCustomer({
-        name: profileForm.name,
-        email: profileForm.email,
-        phone: profileForm.phone,
+      // Get form data from the actual input elements
+      const formElement = document.querySelector('#profile-form') as HTMLFormElement
+      if (!formElement) {
+        console.error('Form element not found')
+        return
+      }
+      
+      const formData = new FormData(formElement)
+      const updatedData = {
+        name: formData.get('name') as string || profileForm.name,
+        email: formData.get('email') as string || profileForm.email,
+        phone: formData.get('phone') as string || profileForm.phone,
         billing_address: {
           ...(fullCustomer?.billing_address || {}),
-          country: profileForm.country
+          country: formData.get('country') as string || profileForm.country
         }
-      })
+      }
+
+      console.log('Updating with data:', updatedData)
+
+      await updateCustomer(updatedData)
 
       toast({
         title: "Profile Updated",
@@ -86,6 +98,7 @@ export default function MyPlanPage() {
       
       setIsEditingProfile(false)
     } catch (error) {
+      console.error('Update error:', error)
       toast({
         title: "Update Failed",
         description: "Failed to update profile. Please try again.",
@@ -423,11 +436,12 @@ export default function MyPlanPage() {
                   />
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form id="profile-form" className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white font-medium mb-2 block">Full Name</Label>
                   <Input
-                    value={profileForm.name || ''}
+                    name="name"
+                    defaultValue={customer?.name || ''}
                     onChange={(e) => {
                       console.log('Name changing:', e.target.value)
                       setProfileForm({...profileForm, name: e.target.value})
@@ -441,7 +455,8 @@ export default function MyPlanPage() {
                 <div>
                   <Label className="text-white font-medium mb-2 block">Email Address</Label>
                   <Input
-                    value={profileForm.email || ''}
+                    name="email"
+                    defaultValue={customer?.email || ''}
                     onChange={(e) => {
                       console.log('Email changing:', e.target.value)
                       setProfileForm({...profileForm, email: e.target.value})
@@ -456,7 +471,8 @@ export default function MyPlanPage() {
                 <div>
                   <Label className="text-white font-medium mb-2 block">Phone Number</Label>
                   <Input
-                    value={profileForm.phone || ''}
+                    name="phone"
+                    defaultValue={fullCustomer?.phone || ''}
                     onChange={(e) => {
                       console.log('Phone changing:', e.target.value)
                       setProfileForm({...profileForm, phone: e.target.value})
@@ -471,7 +487,8 @@ export default function MyPlanPage() {
                 <div>
                   <Label className="text-white font-medium mb-2 block">Country</Label>
                   <Input
-                    value={profileForm.country || ''}
+                    name="country"
+                    defaultValue={fullCustomer?.billing_address?.country || ''}
                     onChange={(e) => {
                       console.log('Country changing:', e.target.value)
                       setProfileForm({...profileForm, country: e.target.value})
@@ -498,7 +515,7 @@ export default function MyPlanPage() {
                     {isLoading ? 'Updating...' : 'Save Changes'}
                   </Button>
                 </div>
-                </div>
+                </form>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
