@@ -96,15 +96,19 @@ export default function MyPlanPage() {
 
   // Update form when customer data changes
   useEffect(() => {
-    if (customer && fullCustomer) {
+    if (customer) {
       setProfileForm({
         name: customer.name || '',
         email: customer.email || '',
-        phone: fullCustomer.phone || '',
-        country: fullCustomer.billing_address?.country || ''
+        phone: fullCustomer?.phone || '',
+        country: fullCustomer?.billing_address?.country || ''
       })
     }
   }, [customer, fullCustomer])
+
+  // Debug log to check if form is updating
+  console.log('Profile form state:', profileForm)
+  console.log('Is editing:', isEditingProfile)
   const [isProcessing, setIsProcessing] = useState(false)
   const [ticketSubject, setTicketSubject] = useState('')
   const [ticketMessage, setTicketMessage] = useState('')
@@ -390,7 +394,7 @@ export default function MyPlanPage() {
               <Button
                 variant="outline"
                 onClick={() => setIsEditingProfile(!isEditingProfile)}
-                className="border-white/30 text-white hover:bg-white/10"
+                className="border-blue-400 bg-blue-600 text-white hover:bg-blue-700 hover:border-blue-500"
               >
                 <Settings className="h-4 w-4 mr-2" />
                 {isEditingProfile ? 'Cancel' : 'Edit Profile'}
@@ -401,38 +405,40 @@ export default function MyPlanPage() {
             {isEditingProfile ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white">Full Name</Label>
+                  <Label className="text-white font-medium mb-2 block">Full Name</Label>
                   <Input
                     value={profileForm.name}
                     onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                    className="bg-white/10 border-white/30 text-white placeholder-gray-400"
+                    className="bg-white/20 border-white/50 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                     placeholder="Enter your name"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Email Address</Label>
+                  <Label className="text-white font-medium mb-2 block">Email Address</Label>
                   <Input
                     value={profileForm.email}
                     onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
-                    className="bg-white/10 border-white/30 text-white placeholder-gray-400"
+                    className="bg-white/20 border-white/50 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                     placeholder="Enter your email"
+                    type="email"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Phone Number</Label>
+                  <Label className="text-white font-medium mb-2 block">Phone Number</Label>
                   <Input
                     value={profileForm.phone}
                     onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
-                    className="bg-white/10 border-white/30 text-white placeholder-gray-400"
+                    className="bg-white/20 border-white/50 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                     placeholder="Enter your phone"
+                    type="tel"
                   />
                 </div>
                 <div>
-                  <Label className="text-white">Country</Label>
+                  <Label className="text-white font-medium mb-2 block">Country</Label>
                   <Input
                     value={profileForm.country}
                     onChange={(e) => setProfileForm({...profileForm, country: e.target.value})}
-                    className="bg-white/10 border-white/30 text-white placeholder-gray-400"
+                    className="bg-white/20 border-white/50 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                     placeholder="Enter your country"
                   />
                 </div>
@@ -440,14 +446,14 @@ export default function MyPlanPage() {
                   <Button
                     variant="outline"
                     onClick={() => setIsEditingProfile(false)}
-                    className="border-white/30 text-white hover:bg-white/10"
+                    className="border-gray-400 bg-gray-600 text-white hover:bg-gray-700 hover:border-gray-500"
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleProfileUpdate}
                     disabled={isLoading}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold"
                   >
                     {isLoading ? 'Updating...' : 'Save Changes'}
                   </Button>
