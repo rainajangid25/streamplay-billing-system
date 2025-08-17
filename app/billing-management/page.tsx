@@ -81,7 +81,16 @@ export default function BillingPage() {
   // Debug: Log when customers data changes
   useEffect(() => {
     console.log('Billing Management - Customers updated:', customers)
+    console.log('Billing Management - Customer count:', customers.length)
+    if (customers.length > 0) {
+      console.log('Billing Management - First customer:', customers[0])
+    }
   }, [customers])
+
+  // Debug: Log when current customer changes  
+  useEffect(() => {
+    console.log('Billing Management - Current customer updated:', currentCustomer)
+  }, [currentCustomer])
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -669,6 +678,53 @@ export default function BillingPage() {
                 ))}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+
+        {/* Customer Information Debug */}
+        <Card className="mb-6">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Customer Information (Debug)</CardTitle>
+              <CardDescription>Real-time customer data from store - updates should reflect immediately</CardDescription>
+            </div>
+            <Button 
+              onClick={() => {
+                console.log('Force refresh - Current store state:', useBillingStore.getState())
+                // Force a re-render by triggering a state change
+                window.location.reload()
+              }}
+              variant="outline"
+              size="sm"
+            >
+              Force Refresh
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <strong>Total Customers:</strong> {customers.length}
+              </div>
+              {customers.map((customer, index) => (
+                <div key={customer.id} className="p-4 border rounded-lg">
+                  <h4 className="font-semibold">Customer #{index + 1}</h4>
+                  <div className="grid grid-cols-2 gap-4 mt-2 text-sm">
+                    <div><strong>Name:</strong> {customer.name}</div>
+                    <div><strong>Email:</strong> {customer.email}</div>
+                    <div><strong>Phone:</strong> {customer.phone || 'N/A'}</div>
+                    <div><strong>Country:</strong> {customer.billing_address?.country || 'N/A'}</div>
+                    <div><strong>Status:</strong> {customer.status}</div>
+                    <div><strong>Plan:</strong> {customer.plan_type}</div>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-2">
+                    Last Updated: {customer.updated_at ? new Date(customer.updated_at).toLocaleString() : 'Never'}
+                  </div>
+                </div>
+              ))}
+              {customers.length === 0 && (
+                <div className="text-gray-500 italic">No customers found in store</div>
+              )}
+            </div>
           </CardContent>
         </Card>
 

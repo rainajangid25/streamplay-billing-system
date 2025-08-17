@@ -95,6 +95,13 @@ export default function MyPlanPage() {
 
       await updateCustomer(updatedData)
       console.log('Update completed')
+      
+      // Debug: Log store state after update
+      setTimeout(() => {
+        const storeState = useBillingStore.getState()
+        console.log('Store state after update:', storeState.customers)
+        console.log('Updated customer in store:', storeState.customers.find(c => c.id === customer?.id))
+      }, 100)
 
       toast({
         title: "Profile Updated",
