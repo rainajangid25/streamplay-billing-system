@@ -70,14 +70,14 @@ body {
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
+/* Base styles without TailwindCSS directives */
+* {
+  border-color: hsl(var(--border));
+}
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
 }
 
 /* Enhanced scrollbar styling */
@@ -225,3 +225,25 @@ body {
   background-color: rgba(59, 130, 246, 0.15);
   border-left: 3px solid #3b82f6;
 }
+
+/* Basic utility classes for debug styling */
+.bg-red-100 { background-color: #fee2e2; }
+.bg-blue-100 { background-color: #dbeafe; }
+.bg-yellow-200 { background-color: #fef3c7; }
+.bg-green-200 { background-color: #d1fae5; }
+.bg-white { background-color: #ffffff; }
+.text-black { color: #000000; }
+.text-red-600 { color: #dc2626; }
+.text-gray-900 { color: #111827; }
+.text-gray-600 { color: #4b5563; }
+.font-bold { font-weight: 700; }
+.p-2 { padding: 0.5rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.border-2 { border-width: 2px; }
+.border-black { border-color: #000000; }
+.border-red-500 { border-color: #ef4444; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.min-h-full { min-height: 100%; }
