@@ -949,73 +949,38 @@ export default function BillingPage() {
                 </Table>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="subscriptions" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Subscription Management</CardTitle>
-                    <CardDescription>Automated recurring billing with smart contract integration</CardDescription>
+
+        {/* View Invoice Dialog */}
+        <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-semibold">Invoice Details</DialogTitle>
+              <DialogDescription>Complete invoice information and line items</DialogDescription>
+            </DialogHeader>
+            {selectedInvoice && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <FileText className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">{selectedInvoice.id}</h3>
+                      <p className="text-sm text-gray-500">Generated for {selectedInvoice.customer}</p>
+                    </div>
                   </div>
-                  <Button size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Subscription
-                  </Button>
+                  <Badge className={getStatusColor(selectedInvoice.status)}>
+                    {selectedInvoice.status}
+                  </Badge>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Subscription ID</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Plan</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Next Billing</TableHead>
-                      <TableHead>Auto Renew</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {localSubscriptions.map((subscription) => (
-                      <TableRow key={subscription.id}>
-                        <TableCell className="font-medium">{subscription.id}</TableCell>
-                        <TableCell>{subscription.customer}</TableCell>
-                        <TableCell>{subscription.plan}</TableCell>
-                        <TableCell className="font-semibold">{subscription.amount}</TableCell>
-                        <TableCell>
-                          <Badge className={getStatusColor(subscription.status)}>{subscription.status}</Badge>
-                        </TableCell>
-                        <TableCell>{subscription.nextBilling}</TableCell>
-                        <TableCell>
-                          {subscription.autoRenew ? (
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <AlertCircle className="h-4 w-4 text-red-600" />
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <Button variant="ghost" size="sm">
-                              Edit
-                            </Button>
-                            <Button variant="ghost" size="sm">
-                              Pause
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="payments" className="space-y-6">
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
+    )
+  }
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
