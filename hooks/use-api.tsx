@@ -49,6 +49,21 @@ export function useApi<T = any>(endpoint: string): ApiResponse<T> {
   return { data, loading, error }
 }
 
+// Mock API call function for components that need it
+export async function apiCall<T = any>(endpoint: string, options?: RequestInit): Promise<T> {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 500))
+  
+  // Return mock data
+  const mockData = getMockData(endpoint)
+  
+  if (mockData === null) {
+    throw new Error(`No mock data available for endpoint: ${endpoint}`)
+  }
+  
+  return mockData as T
+}
+
 function getMockData(endpoint: string) {
   switch (endpoint) {
     case '/billing':
