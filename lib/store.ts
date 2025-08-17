@@ -53,7 +53,7 @@ export const useAppStore = create<AppState>()(
         user: state.user,
         // Don't persist loading/error states
       }),
-      skipHydration: true, // Skip hydration to avoid SSR issues
+      skipHydration: false, // Enable automatic hydration for app store too
     }
   )
 )
@@ -381,14 +381,26 @@ export const initializeStoreData = () => {
 // Manual hydration for stores to ensure persistence works
 export const hydrateStores = () => {
   if (typeof window !== 'undefined') {
+    console.log('Starting manual hydration...')
+    
     // Manually trigger hydration for both stores
     useAppStore.persist.rehydrate()
     useBillingStore.persist.rehydrate()
     
-    // Initialize with sample data if needed
+    // Initialize with sample data if needed - longer delay to ensure both stores are hydrated
     setTimeout(() => {
+      console.log('Starting store initialization...')
       initializeStoreData()
-    }, 100) // Small delay to ensure hydration completes first
+      
+      // Verify stores are working
+      const appState = useAppStore.getState()
+      const billingState = useBillingStore.getState()
+      console.log('Post-initialization state:', {
+        currentUserId: appState.currentUserId,
+        customersCount: billingState.customers.length,
+        subscriptionsCount: billingState.subscriptions.length
+      })
+    }, 200) // Longer delay to ensure hydration completes first
   }
 }
 

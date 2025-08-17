@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { SubscriptionService } from '@/lib/subscription'
 import { emailService } from '@/lib/email-client'
-import { useBillingStore, useCustomerData, useCurrentCustomer } from '@/lib/store'
+import { useBillingStore, useCurrentCustomer } from '@/lib/store'
 import {
   Dialog,
   DialogContent,
@@ -28,9 +28,11 @@ import { Label } from '@/components/ui/label'
 export default function MyPlanPage() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
-  const customer = useCustomerData()
   const { customer: fullCustomer, updateCustomer, isLoading } = useCurrentCustomer()
   const { updateSubscription, subscriptions, customers, addCustomer, addSubscription, updateCustomer: updateCustomerInStore } = useBillingStore()
+  
+  // Use fullCustomer as the primary customer data source
+  const customer = fullCustomer
   
   // Get current subscription data
   const currentSubscription = subscriptions.find(sub => sub.user_id === customer?.id)
@@ -38,10 +40,10 @@ export default function MyPlanPage() {
   // Profile editing state
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [profileForm, setProfileForm] = useState({
-    name: customer?.name || '',
-    email: customer?.email || '',
-    phone: fullCustomer?.phone || '',
-    country: fullCustomer?.billing_address?.country || ''
+    name: '',
+    email: '',
+    phone: '',
+    country: ''
   })
 
 
@@ -82,14 +84,14 @@ export default function MyPlanPage() {
         email: formData.get('email') as string || profileForm.email,
         phone: formData.get('phone') as string || profileForm.phone,
         billing_address: {
-          ...(fullCustomer?.billing_address || {}),
+          ...(customer?.billing_address || {}),
           country: formData.get('country') as string || profileForm.country
         }
       }
 
       console.log('Updating with data:', updatedData)
-      console.log('Current customer before update:', fullCustomer)
-      console.log('Customer ID:', fullCustomer?.id)
+      console.log('Current customer before update:', customer)
+      console.log('Customer ID:', customer?.id)
 
       await updateCustomer(updatedData)
       console.log('Update completed')
@@ -112,16 +114,16 @@ export default function MyPlanPage() {
 
   // Update form when customer data changes
   useEffect(() => {
-    console.log('My Plan: Customer data changed:', { customer, fullCustomer })
-    if (fullCustomer) {
+    console.log('My Plan: Customer data changed:', { customer })
+    if (customer) {
       setProfileForm({
-        name: fullCustomer.name || '',
-        email: fullCustomer.email || '',
-        phone: fullCustomer.phone || '',
-        country: fullCustomer.billing_address?.country || ''
+        name: customer.name || '',
+        email: customer.email || '',
+        phone: customer.phone || '',
+        country: customer.billing_address?.country || ''
       })
     }
-  }, [customer, fullCustomer])
+  }, [customer])
   
   // Debug: Log when profile form changes
   useEffect(() => {
@@ -146,6 +148,7 @@ export default function MyPlanPage() {
   const [ticketPriority, setTicketPriority] = useState('medium')
 
   const handlePauseSubscription = async () => {
+    console.log('handlePauseSubscription called')
     if (!pauseReason.trim()) {
       toast({
         title: "Reason Required",
@@ -157,6 +160,7 @@ export default function MyPlanPage() {
 
     setIsProcessing(true)
     try {
+      console.log('Starting pause subscription process...')
       // Update subscription in central store
       if (currentSubscription) {
         updateSubscription(currentSubscription.id, {
@@ -205,6 +209,7 @@ export default function MyPlanPage() {
   }
 
   const handleCancelSubscription = async () => {
+    console.log('handleCancelSubscription called')
     if (!cancelReason.trim()) {
       toast({
         title: "Reason Required",
@@ -216,6 +221,7 @@ export default function MyPlanPage() {
 
     setIsProcessing(true)
     try {
+      console.log('Starting cancel subscription process...')
       // Update subscription in central store
       if (currentSubscription) {
         updateSubscription(currentSubscription.id, {
@@ -267,6 +273,7 @@ export default function MyPlanPage() {
   }
 
   const handleCreateTicket = async () => {
+    console.log('handleCreateTicket called')
     if (!ticketSubject.trim() || !ticketMessage.trim()) {
       toast({
         title: "Missing Information",
