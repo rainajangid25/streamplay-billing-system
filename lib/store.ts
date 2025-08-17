@@ -1,5 +1,6 @@
 // Global state management using Zustand
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 export interface User {
   id: string
@@ -21,17 +22,30 @@ export interface AppState {
   clearError: () => void
 }
 
-export const useAppStore = create<AppState>((set) => ({
-  user: null,
-  currentUserId: 'cust_001', // Default to first sample customer
-  isLoading: false,
-  error: null,
-  setUser: (user) => set({ user }),
-  setCurrentUserId: (currentUserId) => set({ currentUserId }),
-  setLoading: (isLoading) => set({ isLoading }),
-  setError: (error) => set({ error }),
-  clearError: () => set({ error: null }),
-}))
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      user: null,
+      currentUserId: 'cust_001', // Default to first sample customer
+      isLoading: false,
+      error: null,
+      setUser: (user) => set({ user }),
+      setCurrentUserId: (currentUserId) => set({ currentUserId }),
+      setLoading: (isLoading) => set({ isLoading }),
+      setError: (error) => set({ error }),
+      clearError: () => set({ error: null }),
+    }),
+    {
+      name: 'app-storage', // unique name for localStorage key
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ 
+        currentUserId: state.currentUserId,
+        user: state.user,
+        // Don't persist loading/error states
+      }),
+    }
+  )
+)
 
 // Billing specific state
 export interface BillingState {
@@ -166,7 +180,9 @@ const sampleSubscriptions = [
   }
 ]
 
-export const useBillingStore = create<BillingState>((set, get) => ({
+export const useBillingStore = create<BillingState>()(
+  persist(
+    (set, get) => ({
   transactions: [],
   subscriptions: sampleSubscriptions,
   customers: sampleCustomers,
@@ -222,7 +238,18 @@ export const useBillingStore = create<BillingState>((set, get) => ({
     set({ customers: currentCustomers.filter(c => c.id !== id) })
     get().updateLastUpdated('customers')
   }
-}))
+    }),
+    {
+      name: 'billing-storage', // unique name for localStorage key
+      storage: createJSONStorage(() => localStorage), // use localStorage
+      partialize: (state) => ({ 
+        customers: state.customers,
+        subscriptions: state.subscriptions,
+        // Don't persist loading states and timestamps
+      }),
+    }
+  )
+)
 
 // Unified customer data hook - connects current user to billing store
 export const useCurrentCustomer = () => {
