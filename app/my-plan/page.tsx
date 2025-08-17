@@ -106,9 +106,18 @@ export default function MyPlanPage() {
     }
   }, [customer, fullCustomer])
 
-  // Debug log to check if form is updating
+  // Comprehensive debugging
+  console.log('=== EDIT PROFILE DEBUG ===')
+  console.log('Customer data:', customer)
+  console.log('Full customer:', fullCustomer)
   console.log('Profile form state:', profileForm)
-  console.log('Is editing:', isEditingProfile)
+  console.log('Is editing mode:', isEditingProfile)
+  console.log('Form values:', {
+    name: profileForm.name,
+    email: profileForm.email,
+    phone: profileForm.phone,
+    country: profileForm.country
+  })
   const [isProcessing, setIsProcessing] = useState(false)
   const [ticketSubject, setTicketSubject] = useState('')
   const [ticketMessage, setTicketMessage] = useState('')
@@ -403,43 +412,74 @@ export default function MyPlanPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {isEditingProfile ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-6">
+                {/* Test Input - Simple debugging */}
+                <div className="bg-red-500/20 p-4 rounded border-2 border-red-500">
+                  <Label className="text-red-300 font-bold">🔥 DEBUG TEST INPUT</Label>
+                  <Input
+                    placeholder="Type here to test if inputs work..."
+                    className="bg-white text-black mt-2"
+                    onChange={(e) => console.log('Test input:', e.target.value)}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white font-medium mb-2 block">Full Name</Label>
                   <Input
-                    value={profileForm.name}
-                    onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                    value={profileForm.name || ''}
+                    onChange={(e) => {
+                      console.log('Name changing:', e.target.value)
+                      setProfileForm({...profileForm, name: e.target.value})
+                    }}
                     className="bg-white/20 border-white/50 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                     placeholder="Enter your name"
+                    readOnly={false}
+                    disabled={false}
                   />
                 </div>
                 <div>
                   <Label className="text-white font-medium mb-2 block">Email Address</Label>
                   <Input
-                    value={profileForm.email}
-                    onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                    value={profileForm.email || ''}
+                    onChange={(e) => {
+                      console.log('Email changing:', e.target.value)
+                      setProfileForm({...profileForm, email: e.target.value})
+                    }}
                     className="bg-white/20 border-white/50 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                     placeholder="Enter your email"
                     type="email"
+                    readOnly={false}
+                    disabled={false}
                   />
                 </div>
                 <div>
                   <Label className="text-white font-medium mb-2 block">Phone Number</Label>
                   <Input
-                    value={profileForm.phone}
-                    onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                    value={profileForm.phone || ''}
+                    onChange={(e) => {
+                      console.log('Phone changing:', e.target.value)
+                      setProfileForm({...profileForm, phone: e.target.value})
+                    }}
                     className="bg-white/20 border-white/50 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                     placeholder="Enter your phone"
                     type="tel"
+                    readOnly={false}
+                    disabled={false}
                   />
                 </div>
                 <div>
                   <Label className="text-white font-medium mb-2 block">Country</Label>
                   <Input
-                    value={profileForm.country}
-                    onChange={(e) => setProfileForm({...profileForm, country: e.target.value})}
+                    value={profileForm.country || ''}
+                    onChange={(e) => {
+                      console.log('Country changing:', e.target.value)
+                      setProfileForm({...profileForm, country: e.target.value})
+                    }}
                     className="bg-white/20 border-white/50 text-white placeholder-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                     placeholder="Enter your country"
+                    readOnly={false}
+                    disabled={false}
                   />
                 </div>
                 <div className="md:col-span-2 flex justify-end space-x-3">
@@ -457,6 +497,7 @@ export default function MyPlanPage() {
                   >
                     {isLoading ? 'Updating...' : 'Save Changes'}
                   </Button>
+                </div>
                 </div>
               </div>
             ) : (
