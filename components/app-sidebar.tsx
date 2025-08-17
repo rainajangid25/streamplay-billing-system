@@ -41,6 +41,10 @@ import { Badge } from "@/components/ui/badge"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  
+  // Test if JavaScript/console is working
+  console.log('🚀 SIDEBAR LOADED - JavaScript is working!')
+  console.log('📍 Current pathname on load:', pathname)
 
   const coreMenuItems = [
     {
@@ -186,6 +190,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         // Check if default is prevented
                         if (e.defaultPrevented) {
                           console.log('⚠️ WARNING: Navigation event was prevented!')
+                        }
+                        
+                        // ALTERNATIVE: Try direct window navigation if Next.js Link fails
+                        if (item.href !== pathname) {
+                          console.log('🔄 ATTEMPTING FALLBACK: Direct window navigation')
+                          setTimeout(() => {
+                            if (window.location.pathname === pathname) {
+                              console.log('🔄 FALLBACK: Next.js Link failed, trying window.location')
+                              window.location.href = item.href
+                            }
+                          }, 200)
                         }
                         
                         // Add small delay to see if navigation happens
