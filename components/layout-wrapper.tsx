@@ -89,8 +89,10 @@ export function LayoutWrapper({ children, defaultOpen }: LayoutWrapperProps) {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          <main style={{ flex: 1, padding: '1.5rem', overflow: 'auto', width: '100%' }}>
-            {children}
+          <main style={{ flex: 1, padding: '0.75rem', overflow: 'auto', width: '100%', maxWidth: '100%' }}>
+            <div style={{ width: '100%', maxWidth: 'none' }}>
+              {children}
+            </div>
           </main>
         </div>
       </SidebarProvider>
