@@ -58,10 +58,10 @@ export function LayoutWrapper({ children, defaultOpen }: LayoutWrapperProps) {
   const breadcrumbs = generateBreadcrumbs()
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', width: '100%' }}>
-      <SidebarProvider defaultOpen={false}>
+    <SidebarProvider defaultOpen={false}>
+      <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, width: '100%' }}>
+        <div className="flex-1 flex flex-col">
           <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
@@ -89,13 +89,11 @@ export function LayoutWrapper({ children, defaultOpen }: LayoutWrapperProps) {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          <main style={{ flex: 1, padding: '0.75rem', overflow: 'auto', width: '100%', maxWidth: '100%' }}>
-            <div style={{ width: '100%', maxWidth: 'none' }}>
-              {children}
-            </div>
+          <main className="flex-1 p-6 overflow-auto">
+            {children}
           </main>
         </div>
-      </SidebarProvider>
-    </div>
+      </div>
+    </SidebarProvider>
   )
 }
