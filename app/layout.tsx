@@ -5,6 +5,7 @@ import { LayoutWrapper } from '@/components/layout-wrapper'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
 import { StoreHydrator } from '@/components/store-hydrator'
+import { ErrorBoundary } from '@/components/error-boundary'
 
 export const metadata = {
   title: 'StreamPlay Billing - Smart Subscription Management',
@@ -20,13 +21,15 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <StoreHydrator />
-          <LayoutWrapper defaultOpen={defaultOpen}>
-            {children}
-          </LayoutWrapper>
-          <Toaster />
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <StoreHydrator />
+            <LayoutWrapper defaultOpen={defaultOpen}>
+              {children}
+            </LayoutWrapper>
+            <Toaster />
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

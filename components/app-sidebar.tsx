@@ -179,8 +179,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       href={item.href} 
                       className="flex items-center space-x-3 p-3"
                       onClick={(e) => {
-                        console.log(`Navigating to: ${item.href} (${item.title})`)
-                        console.log('Navigation event:', e)
+                        console.log(`🔗 NAVIGATION ATTEMPT: ${item.href} (${item.title})`)
+                        console.log('📍 Current pathname:', pathname)
+                        console.log('🖱️ Click event:', e)
+                        
+                        // Check if default is prevented
+                        if (e.defaultPrevented) {
+                          console.log('⚠️ WARNING: Navigation event was prevented!')
+                        }
+                        
+                        // Add small delay to see if navigation happens
+                        setTimeout(() => {
+                          console.log('⏰ Navigation check - current path:', window.location.pathname)
+                          if (window.location.pathname === pathname) {
+                            console.log('❌ NAVIGATION FAILED - Still on same page!')
+                          } else {
+                            console.log('✅ NAVIGATION SUCCESS - Page changed!')
+                          }
+                        }, 100)
                       }}
                     >
                       <item.icon className="h-5 w-5 flex-shrink-0" />
