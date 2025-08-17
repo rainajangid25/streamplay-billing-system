@@ -88,8 +88,11 @@ export default function MyPlanPage() {
       }
 
       console.log('Updating with data:', updatedData)
+      console.log('Current customer before update:', fullCustomer)
+      console.log('Customer ID:', fullCustomer?.id)
 
       await updateCustomer(updatedData)
+      console.log('Update completed')
 
       toast({
         title: "Profile Updated",
@@ -165,10 +168,17 @@ export default function MyPlanPage() {
         })
       }
 
-      await emailService.sendAdminNotification(
-        `User ${customer?.name} paused subscription. Reason: ${pauseReason}`,
-        'medium'
-      )
+      try {
+        console.log('Sending admin notification...')
+        await emailService.sendAdminNotification(
+          `User ${customer?.name} paused subscription. Reason: ${pauseReason}`,
+          'medium'
+        )
+        console.log('Admin notification sent successfully')
+      } catch (emailError) {
+        console.error('Email service error:', emailError)
+        // Continue anyway, don't let email failure block the process
+      }
 
       toast({
         title: "Subscription Paused",
@@ -219,11 +229,18 @@ export default function MyPlanPage() {
         })
       }
 
-      await emailService.sendCancellationConfirmation(
-        customer?.email || 'user@email.com',
-        customer?.name || 'User',
-        customer?.subscription_end_date || '2025-08-29'
-      )
+      try {
+        console.log('Sending cancellation confirmation...')
+        await emailService.sendCancellationConfirmation(
+          customer?.email || 'user@email.com',
+          customer?.name || 'User',
+          customer?.subscription_end_date || '2025-08-29'
+        )
+        console.log('Cancellation confirmation sent successfully')
+      } catch (emailError) {
+        console.error('Email service error:', emailError)
+        // Continue anyway, don't let email failure block the process
+      }
 
       toast({
         title: "Subscription Cancelled",

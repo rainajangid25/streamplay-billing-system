@@ -77,6 +77,11 @@ export default function BillingPage() {
   const searchParams = useSearchParams()
   const { customers, subscriptions } = useBillingStore()
   const { customer: currentCustomer } = useCurrentCustomer()
+  
+  // Debug: Log when customers data changes
+  useEffect(() => {
+    console.log('Billing Management - Customers updated:', customers)
+  }, [customers])
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)

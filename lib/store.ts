@@ -240,12 +240,20 @@ export const useBillingStore = create<BillingState>()(
   },
   updateCustomer: (id: string, updates: any) => {
     const currentCustomers = get().customers
-    set({ 
-      customers: currentCustomers.map(c => 
-        c.id === id ? { ...c, ...updates } : c
-      ) 
-    })
+    const updatedCustomers = currentCustomers.map(c => 
+      c.id === id ? { ...c, ...updates, updated_at: new Date().toISOString() } : c
+    )
+    console.log('Store updateCustomer called:', { id, updates, before: currentCustomers.find(c => c.id === id), after: updatedCustomers.find(c => c.id === id) })
+    set({ customers: updatedCustomers })
     get().updateLastUpdated('customers')
+    
+    // Force persistence
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('billing-storage', JSON.stringify({
+        customers: updatedCustomers,
+        subscriptions: get().subscriptions
+      }))
+    }
   },
   removeCustomer: (id: string) => {
     const currentCustomers = get().customers
@@ -307,7 +315,7 @@ export const hydrateStores = () => {
 // Unified customer data hook - connects current user to billing store
 export const useCurrentCustomer = () => {
   const { currentUserId } = useAppStore()
-  const { customers, updateCustomer } = useBillingStore()
+  const { customers, updateCustomer: updateCustomerInStore } = useBillingStore()
 
   // Find current customer in billing store
   const currentCustomer = customers.find(c => c.id === currentUserId)
@@ -317,7 +325,8 @@ export const useCurrentCustomer = () => {
     customer: currentCustomer || null,
     updateCustomer: (updates: any) => {
       if (currentUserId) {
-        updateCustomer(currentUserId, updates)
+        console.log('Updating customer in store:', currentUserId, updates)
+        updateCustomerInStore(currentUserId, updates)
       }
     },
     isLoading: false
