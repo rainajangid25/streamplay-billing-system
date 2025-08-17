@@ -1,17 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Crown, Check, Star, Smartphone, Tv, Laptop, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCurrentCustomer } from '@/lib/store'
+import { useCurrentCustomer, useBillingStore } from '@/lib/store'
+import { useSearchParams } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
 
 export default function ChangePlanPage() {
   const router = useRouter()
   const { customer } = useCurrentCustomer()
+  const { addCustomer, addSubscription } = useBillingStore()
+  const searchParams = useSearchParams()
+  const { toast } = useToast()
   const [selectedPlan, setSelectedPlan] = useState('mega')
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
 
@@ -127,6 +132,57 @@ export default function ChangePlanPage() {
     // Navigate to customer billing page with plan details for checkout
     router.push(redirectUrl)
   }
+
+  // Auto-create account for new StreamPlay users
+  useEffect(() => {
+    const email = searchParams?.get('email')
+    const name = searchParams?.get('name')
+    const streamplayId = searchParams?.get('streamplay_id')
+    const source = searchParams?.get('source')
+    const autoCreate = searchParams?.get('auto_create')
+
+    if (autoCreate === 'true' && email && name && !customer) {
+      // Create new customer account
+      const newCustomer = {
+        id: `cust_${Date.now()}`,
+        email: email,
+        name: name,
+        phone: searchParams?.get('phone') || '',
+        streamplay_id: streamplayId,
+        source: source || 'streamplay',
+        subscription_status: 'trial',
+        total_spent: 0,
+        created_at: new Date().toISOString(),
+        last_payment: null,
+        billing_address: {},
+        payment_methods: []
+      }
+
+      // Create trial subscription
+      const newSubscription = {
+        id: `sub_${Date.now()}`,
+        user_id: newCustomer.id,
+        plan_id: 'trial',
+        status: 'trial',
+        current_period_start: new Date().toISOString(),
+        current_period_end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days trial
+        price: 0,
+        currency: '₹',
+        billing_cycle: 'trial',
+        created_at: new Date().toISOString()
+      }
+
+      // Add to store
+      addCustomer(newCustomer)
+      addSubscription(newSubscription)
+
+      toast({
+        title: "Welcome to StreamPlay!",
+        description: `Hi ${name}! Choose your plan to get started with StreamPlay.`,
+        duration: 5000
+      })
+    }
+  }, [searchParams, customer, addCustomer, addSubscription, toast])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
