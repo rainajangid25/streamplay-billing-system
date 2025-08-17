@@ -88,8 +88,8 @@ export function LayoutWrapper({ children, defaultOpen }: LayoutWrapperProps) {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <main className="flex-1 overflow-auto">
-          <div className="container mx-auto max-w-full">
+        <main className="flex-1 overflow-auto w-full">
+          <div className="w-full p-6">
             {children}
           </div>
         </main>
