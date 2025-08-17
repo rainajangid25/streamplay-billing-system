@@ -31,6 +31,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import { Search, Plus, Download, Eye, Edit, Trash2, Ticket, AlertCircle, CheckCircle, Clock } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useBillingStore } from "@/lib/store"
 
 interface TicketFormData {
   title: string
@@ -81,6 +82,9 @@ export default function TicketManagementPage() {
   const [selectedTicket, setSelectedTicket] = useState<TicketData | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
+  
+  // Use tickets from global store
+  const { tickets: storeTickets, addTicket, updateTicket, removeTicket } = useBillingStore()
 
   // Load tickets from localStorage or use default data
   const getInitialTickets = (): TicketData[] => {
@@ -163,14 +167,51 @@ export default function TicketManagementPage() {
     ]
   }
 
-  const [tickets, setTickets] = useState<TicketData[]>(getInitialTickets)
+  const [localTickets, setLocalTickets] = useState<TicketData[]>(getInitialTickets)
 
-  // Save tickets to localStorage whenever tickets change
+  // Convert store tickets to local ticket format and combine with local tickets
+  const convertStoreTicketsToLocal = (storeTickets: any[]): TicketData[] => {
+    return storeTickets.map(ticket => ({
+      businessUnit: "StreamPlay",
+      createdDate: ticket.createdAt || new Date().toISOString(),
+      modifiedDate: ticket.updatedAt || ticket.createdAt || new Date().toISOString(),
+      ticketId: ticket.id,
+      category: "Customer Support",
+      title: ticket.subject,
+      level1: "Support",
+      level2: "Customer Issue",
+      level3: ticket.priority,
+      cpCustomerId: ticket.customerId || '',
+      assignedUser: "Support Team",
+      assignedQueue: "General Support",
+      status: ticket.status === 'open' ? 'Open' : 
+               ticket.status === 'in_progress' ? 'In Progress' : 
+               ticket.status === 'resolved' ? 'Resolved' : 'Open',
+      subStatus: ticket.status === 'open' ? 'New' : 'Active',
+      priority: ticket.priority || 'medium',
+      customerName: ticket.customerName,
+      email: ticket.email,
+      description: ticket.message
+    }))
+  }
+
+  // Combine local tickets with store tickets
+  const allTickets = [...localTickets, ...convertStoreTicketsToLocal(storeTickets)]
+
+  // Use allTickets instead of tickets
+  const tickets = allTickets
+
+  // Save local tickets to localStorage whenever they change
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(localTickets))
     }
-  }, [tickets])
+  }, [localTickets])
+
+  // Debug: Log when store tickets change
+  useEffect(() => {
+    console.log('Ticket Management - Store tickets updated:', storeTickets)
+  }, [storeTickets])
 
   const [formData, setFormData] = useState<TicketFormData>({
     title: "",
@@ -311,7 +352,17 @@ export default function TicketManagementPage() {
 
   const confirmDelete = () => {
     if (selectedTicket) {
-      setTickets((prev) => prev.filter((t) => t.ticketId !== selectedTicket.ticketId))
+      // Check if it's a store ticket (from My Account) or local ticket
+      const isStoreTicket = selectedTicket.ticketId.startsWith('TKT_')
+      
+      if (isStoreTicket) {
+        // Remove from store
+        removeTicket(selectedTicket.ticketId)
+      } else {
+        // Remove from local tickets
+        setLocalTickets((prev) => prev.filter((t) => t.ticketId !== selectedTicket.ticketId))
+      }
+      
       toast({
         title: "Ticket Deleted",
         description: `${selectedTicket.ticketId} has been removed from the system.`,
@@ -338,32 +389,48 @@ export default function TicketManagementPage() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500))
 
-      setTickets((prev) =>
-        prev.map((ticket) =>
-          ticket.ticketId === selectedTicket.ticketId
-            ? {
-                ...ticket,
-                title: editFormData.title,
-                businessUnit: editFormData.businessUnit,
-                category: editFormData.category,
-                priority: editFormData.priority,
-                customerName: editFormData.customerName,
-                phoneNumber: editFormData.phoneNumber,
-                email: editFormData.email,
-                cpCustomerId: editFormData.customerId,
-                description: editFormData.description,
-                modifiedDate: new Date().toLocaleString("en-US", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                }),
-              }
-            : ticket,
-        ),
-      )
+      // Check if it's a store ticket or local ticket
+      const isStoreTicket = selectedTicket.ticketId.startsWith('TKT_')
+      
+      if (isStoreTicket) {
+        // Update in store
+        updateTicket(selectedTicket.ticketId, {
+          subject: editFormData.title,
+          priority: editFormData.priority,
+          customerName: editFormData.customerName,
+          email: editFormData.email,
+          message: editFormData.description,
+          updatedAt: new Date().toISOString()
+        })
+      } else {
+        // Update local tickets
+        setLocalTickets((prev) =>
+          prev.map((ticket) =>
+            ticket.ticketId === selectedTicket.ticketId
+              ? {
+                  ...ticket,
+                  title: editFormData.title,
+                  businessUnit: editFormData.businessUnit,
+                  category: editFormData.category,
+                  priority: editFormData.priority,
+                  customerName: editFormData.customerName,
+                  phoneNumber: editFormData.phoneNumber,
+                  email: editFormData.email,
+                  cpCustomerId: editFormData.customerId,
+                  description: editFormData.description,
+                  modifiedDate: new Date().toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  }),
+                }
+              : ticket,
+          ),
+        )
+      }
 
       setIsEditDialogOpen(false)
       setSelectedTicket(null)
@@ -436,8 +503,8 @@ export default function TicketManagementPage() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Add to tickets list
-      setTickets((prev) => [newTicket, ...prev])
+      // Add to local tickets list (admin created tickets)
+      setLocalTickets((prev) => [newTicket, ...prev])
 
       // Reset form
       setFormData({

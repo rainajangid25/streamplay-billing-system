@@ -29,7 +29,7 @@ export default function MyPlanPage() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
   const { customer: fullCustomer, updateCustomer, isLoading } = useCurrentCustomer()
-  const { updateSubscription, subscriptions, customers, addCustomer, addSubscription, updateCustomer: updateCustomerInStore } = useBillingStore()
+  const { updateSubscription, subscriptions, customers, addCustomer, addSubscription, updateCustomer: updateCustomerInStore, addTicket } = useBillingStore()
   
   // Use fullCustomer as the primary customer data source
   const customer = fullCustomer
@@ -285,16 +285,23 @@ export default function MyPlanPage() {
 
     setIsProcessing(true)
     try {
-      // Create ticket (mock implementation)
+      // Create ticket with complete information
       const ticket = {
         id: `TKT_${Date.now()}`,
         customerId: customer?.id,
+        customerName: customer?.name || 'Unknown',
+        email: customer?.email || '',
         subject: ticketSubject,
         message: ticketMessage,
         priority: ticketPriority,
         status: 'open',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       }
+
+      // Save ticket to global store
+      addTicket(ticket)
+      console.log('Ticket saved to store:', ticket)
 
       await new Promise(resolve => setTimeout(resolve, 1000))
 

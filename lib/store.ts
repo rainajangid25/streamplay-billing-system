@@ -65,12 +65,14 @@ export interface BillingState {
   customers: any[]
   invoices: any[]
   products: any[]
+  tickets: any[]
   isLoading: {
     customers: boolean
     subscriptions: boolean
     products: boolean
     invoices: boolean
     transactions: boolean
+    tickets: boolean
   }
   lastUpdated: {
     customers: number
@@ -78,6 +80,7 @@ export interface BillingState {
     products: number
     invoices: number
     transactions: number
+    tickets: number
   }
   isLoadingTransactions: boolean
   isLoadingSubscriptions: boolean
@@ -96,6 +99,9 @@ export interface BillingState {
   addSubscription: (subscription: any) => void
   updateSubscription: (id: string, updates: any) => void
   removeSubscription: (id: string) => void
+  addTicket: (ticket: any) => void
+  updateTicket: (id: string, updates: any) => void
+  removeTicket: (id: string) => void
 }
 
 // Sample customer data for demonstration
@@ -202,19 +208,22 @@ export const useBillingStore = create<BillingState>()(
   customers: sampleCustomers,
   invoices: [],
   products: [],
+  tickets: [],
   isLoading: {
     customers: false,
     subscriptions: false,
     products: false,
     invoices: false,
-    transactions: false
+    transactions: false,
+    tickets: false
   },
   lastUpdated: {
     customers: Date.now(),
     subscriptions: Date.now(),
     products: Date.now(),
     invoices: Date.now(),
-    transactions: Date.now()
+    transactions: Date.now(),
+    tickets: Date.now()
   },
   isLoadingTransactions: false,
   isLoadingSubscriptions: false,
@@ -302,6 +311,25 @@ export const useBillingStore = create<BillingState>()(
     const currentSubscriptions = get().subscriptions
     set({ subscriptions: currentSubscriptions.filter(s => s.id !== id) })
     get().updateLastUpdated('subscriptions')
+  },
+  addTicket: (ticket: any) => {
+    const currentTickets = get().tickets
+    set({ tickets: [...currentTickets, ticket] })
+    get().updateLastUpdated('tickets')
+  },
+  updateTicket: (id: string, updates: any) => {
+    const currentTickets = get().tickets
+    set({ 
+      tickets: currentTickets.map(t => 
+        t.id === id ? { ...t, ...updates } : t
+      ) 
+    })
+    get().updateLastUpdated('tickets')
+  },
+  removeTicket: (id: string) => {
+    const currentTickets = get().tickets
+    set({ tickets: currentTickets.filter(t => t.id !== id) })
+    get().updateLastUpdated('tickets')
   }
     }),
     {
@@ -320,6 +348,7 @@ export const useBillingStore = create<BillingState>()(
       partialize: (state) => ({ 
         customers: state.customers,
         subscriptions: state.subscriptions,
+        tickets: state.tickets,
         // Don't persist loading states and timestamps
       }),
       skipHydration: false, // Enable automatic hydration
