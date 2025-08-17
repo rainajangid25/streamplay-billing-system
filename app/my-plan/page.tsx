@@ -426,15 +426,7 @@ export default function MyPlanPage() {
           <CardContent className="space-y-4">
             {isEditingProfile ? (
               <div className="space-y-6">
-                {/* Test Input - Simple debugging */}
-                <div className="bg-red-500/20 p-4 rounded border-2 border-red-500">
-                  <Label className="text-red-300 font-bold">🔥 DEBUG TEST INPUT</Label>
-                  <Input
-                    placeholder="Type here to test if inputs work..."
-                    className="bg-white text-black mt-2"
-                    onChange={(e) => console.log('Test input:', e.target.value)}
-                  />
-                </div>
+
                 
                 <form id="profile-form" className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

@@ -37,12 +37,23 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'app-storage', // unique name for localStorage key
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => {
+        if (typeof window !== 'undefined') {
+          return localStorage
+        }
+        // Fallback for SSR
+        return {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        }
+      }),
       partialize: (state) => ({ 
         currentUserId: state.currentUserId,
         user: state.user,
         // Don't persist loading/error states
       }),
+      skipHydration: true, // Skip hydration to avoid SSR issues
     }
   )
 )
@@ -241,24 +252,44 @@ export const useBillingStore = create<BillingState>()(
     }),
     {
       name: 'billing-storage', // unique name for localStorage key
-      storage: createJSONStorage(() => localStorage), // use localStorage
+      storage: createJSONStorage(() => {
+        if (typeof window !== 'undefined') {
+          return localStorage
+        }
+        // Fallback for SSR
+        return {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        }
+      }),
       partialize: (state) => ({ 
         customers: state.customers,
         subscriptions: state.subscriptions,
         // Don't persist loading states and timestamps
       }),
+      skipHydration: true, // Skip hydration to avoid SSR issues
     }
   )
 )
+
+// Manual hydration for stores to ensure persistence works
+export const hydrateStores = () => {
+  if (typeof window !== 'undefined') {
+    // Manually trigger hydration for both stores
+    useAppStore.persist.rehydrate()
+    useBillingStore.persist.rehydrate()
+  }
+}
 
 // Unified customer data hook - connects current user to billing store
 export const useCurrentCustomer = () => {
   const { currentUserId } = useAppStore()
   const { customers, updateCustomer } = useBillingStore()
-  
+
   // Find current customer in billing store
   const currentCustomer = customers.find(c => c.id === currentUserId)
-  
+
   // Return customer with update function
   return {
     customer: currentCustomer || null,
