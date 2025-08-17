@@ -175,7 +175,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     isActive={pathname === item.href}
                     className="group relative rounded-lg transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-700 data-[active=true]:font-medium"
                   >
-                    <Link href={item.href} className="flex items-center space-x-3 p-3">
+                    <Link 
+                      href={item.href} 
+                      className="flex items-center space-x-3 p-3"
+                      onClick={(e) => {
+                        console.log(`Navigating to: ${item.href} (${item.title})`)
+                        console.log('Navigation event:', e)
+                      }}
+                    >
                       <item.icon className="h-5 w-5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium truncate">{item.title}</div>

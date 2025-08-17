@@ -21,9 +21,14 @@ interface LayoutWrapperProps {
 export function LayoutWrapper({ children, defaultOpen }: LayoutWrapperProps) {
   const pathname = usePathname()
   
+  // Debug navigation
+  console.log('LayoutWrapper - Current pathname:', pathname)
+  
   // Routes that should not have the sidebar
   const noSidebarRoutes = ['/landing']
   const shouldShowSidebar = !noSidebarRoutes.includes(pathname)
+  
+  console.log('LayoutWrapper - Should show sidebar:', shouldShowSidebar)
 
   // Generate breadcrumbs based on pathname
   const generateBreadcrumbs = () => {
