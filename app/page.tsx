@@ -157,10 +157,10 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Next-Generation Billing Platform</h1>
-          <p className="text-gray-600">Cloud-Native & Web3 Hybrid • API-First • Smart Contract-Driven • AI-Powered</p>
+    <div style={{ minHeight: '100%', background: 'linear-gradient(to bottom right, #f8fafc, #f1f5f9)', width: '100%' }}>
+        <div style={{ marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', marginBottom: '0.5rem' }}>Next-Generation Billing Platform</h1>
+          <p style={{ color: '#4b5563' }}>Cloud-Native & Web3 Hybrid • API-First • Smart Contract-Driven • AI-Powered</p>
         </div>
 
         {/* Key Metrics Overview */}

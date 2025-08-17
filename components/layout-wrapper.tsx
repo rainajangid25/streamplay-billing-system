@@ -58,42 +58,42 @@ export function LayoutWrapper({ children, defaultOpen }: LayoutWrapperProps) {
   const breadcrumbs = generateBreadcrumbs()
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              {breadcrumbs.map((breadcrumb, index) => (
-                <div key={breadcrumb.href} className="flex items-center">
-                  {index > 0 && <BreadcrumbSeparator />}
-                  <BreadcrumbItem>
-                    {breadcrumb.isPage ? (
-                      <BreadcrumbPage className="text-sm font-medium text-gray-900">
-                        {breadcrumb.label}
-                      </BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink
-                        href={breadcrumb.href}
-                        className="text-sm text-gray-600 hover:text-gray-900"
-                      >
-                        {breadcrumb.label}
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                </div>
-              ))}
-            </BreadcrumbList>
-          </Breadcrumb>
-        </header>
-        <main className="flex-1 overflow-auto w-full">
-          <div className="w-full p-6">
+    <div style={{ display: 'flex', minHeight: '100vh', width: '100%' }}>
+      <SidebarProvider defaultOpen={false}>
+        <AppSidebar />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, width: '100%' }}>
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                {breadcrumbs.map((breadcrumb, index) => (
+                  <div key={breadcrumb.href} className="flex items-center">
+                    {index > 0 && <BreadcrumbSeparator />}
+                    <BreadcrumbItem>
+                      {breadcrumb.isPage ? (
+                        <BreadcrumbPage className="text-sm font-medium text-gray-900">
+                          {breadcrumb.label}
+                        </BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink
+                          href={breadcrumb.href}
+                          className="text-sm text-gray-600 hover:text-gray-900"
+                        >
+                          {breadcrumb.label}
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </div>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
+          </header>
+          <main style={{ flex: 1, padding: '1.5rem', overflow: 'auto', width: '100%' }}>
             {children}
-          </div>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+          </main>
+        </div>
+      </SidebarProvider>
+    </div>
   )
 }
