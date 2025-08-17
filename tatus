@@ -1,0 +1,5 @@
+[33me402ff3[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m IMPLEMENT UNIFIED DATA SYNC: Real-time customer data synchronization
+[33mbe98c3d[m ADD SAMPLE CUSTOMER DATA: Fix subscriber management empty state
+[33mda9a6d5[m CRITICAL FIX: Move TailwindCSS to main dependencies
+[33m4f0ae58[m FIX TAILWINDCSS BUILD: Install TailwindCSS during Amplify build process
+[33m0bdc9f4[m  RESTORE TAILWINDCSS: Fix styling and layout issues
