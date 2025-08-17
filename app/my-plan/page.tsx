@@ -112,15 +112,21 @@ export default function MyPlanPage() {
 
   // Update form when customer data changes
   useEffect(() => {
-    if (customer) {
+    console.log('My Plan: Customer data changed:', { customer, fullCustomer })
+    if (fullCustomer) {
       setProfileForm({
-        name: customer.name || '',
-        email: customer.email || '',
-        phone: fullCustomer?.phone || '',
-        country: fullCustomer?.billing_address?.country || ''
+        name: fullCustomer.name || '',
+        email: fullCustomer.email || '',
+        phone: fullCustomer.phone || '',
+        country: fullCustomer.billing_address?.country || ''
       })
     }
   }, [customer, fullCustomer])
+  
+  // Debug: Log when profile form changes
+  useEffect(() => {
+    console.log('My Plan: Profile form updated:', profileForm)
+  }, [profileForm])
 
   // Comprehensive debugging
   console.log('=== EDIT PROFILE DEBUG ===')

@@ -8,13 +8,13 @@ export function StoreHydrator() {
   
   useEffect(() => {
     // Hydrate stores on client side
-    console.log('Hydrating stores...')
+    console.log('StoreHydrator: Starting hydration...')
     hydrateStores()
-    console.log('Stores hydrated, customers:', customers)
+    console.log('StoreHydrator: Hydration completed, customers:', customers)
   }, [])
 
   useEffect(() => {
-    console.log('Store hydrator - customers changed:', customers)
+    console.log('StoreHydrator: Customers data changed:', customers.length, customers)
   }, [customers])
 
   return null // This component doesn't render anything

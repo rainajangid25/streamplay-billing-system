@@ -240,19 +240,43 @@ export const useBillingStore = create<BillingState>()(
   },
   updateCustomer: (id: string, updates: any) => {
     const currentCustomers = get().customers
-    const updatedCustomers = currentCustomers.map(c => 
-      c.id === id ? { ...c, ...updates, updated_at: new Date().toISOString() } : c
-    )
-    console.log('Store updateCustomer called:', { id, updates, before: currentCustomers.find(c => c.id === id), after: updatedCustomers.find(c => c.id === id) })
+    const customerIndex = currentCustomers.findIndex(c => c.id === id)
+    
+    if (customerIndex === -1) {
+      console.error('Customer not found:', id)
+      return
+    }
+    
+    const updatedCustomer = { 
+      ...currentCustomers[customerIndex], 
+      ...updates, 
+      updated_at: new Date().toISOString() 
+    }
+    
+    const updatedCustomers = [...currentCustomers]
+    updatedCustomers[customerIndex] = updatedCustomer
+    
+    console.log('Store updateCustomer called:', { 
+      id, 
+      updates, 
+      before: currentCustomers[customerIndex], 
+      after: updatedCustomer 
+    })
+    
     set({ customers: updatedCustomers })
     get().updateLastUpdated('customers')
     
-    // Force persistence
+    // Force immediate persistence to localStorage
     if (typeof window !== 'undefined') {
-      localStorage.setItem('billing-storage', JSON.stringify({
-        customers: updatedCustomers,
-        subscriptions: get().subscriptions
-      }))
+      const storeData = {
+        state: {
+          customers: updatedCustomers,
+          subscriptions: get().subscriptions
+        },
+        version: 0
+      }
+      localStorage.setItem('billing-storage', JSON.stringify(storeData))
+      console.log('Data persisted to localStorage:', storeData)
     }
   },
   removeCustomer: (id: string) => {
@@ -298,10 +322,61 @@ export const useBillingStore = create<BillingState>()(
         subscriptions: state.subscriptions,
         // Don't persist loading states and timestamps
       }),
-      skipHydration: true, // Skip hydration to avoid SSR issues
+      skipHydration: false, // Enable automatic hydration
     }
   )
 )
+
+// Initialize store with sample data if empty
+export const initializeStoreData = () => {
+  const store = useBillingStore.getState()
+  
+  // If no customers exist, add sample data
+  if (store.customers.length === 0) {
+    console.log('Initializing store with sample data...')
+    
+    const sampleCustomer = {
+      id: 'user-123',
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      phone: '+1-555-0123',
+      subscription_status: 'active',
+      status: 'active',
+      plan_type: 'Premium',
+      billing_address: {
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        postal_code: '10001',
+        country: 'United States'
+      },
+      subscription_start_date: '2024-01-15',
+      subscription_end_date: '2025-01-15',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+    
+    const sampleSubscription = {
+      id: 'sub-123',
+      user_id: 'user-123',
+      plan_id: 'premium',
+      status: 'active',
+      start_date: '2024-01-15',
+      end_date: '2025-01-15',
+      amount: 29.99,
+      currency: 'USD',
+      billing_cycle: 'monthly',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+    
+    store.addCustomer(sampleCustomer)
+    store.addSubscription(sampleSubscription)
+    
+    // Set current user
+    useAppStore.getState().setCurrentUserId('user-123')
+  }
+}
 
 // Manual hydration for stores to ensure persistence works
 export const hydrateStores = () => {
@@ -309,6 +384,11 @@ export const hydrateStores = () => {
     // Manually trigger hydration for both stores
     useAppStore.persist.rehydrate()
     useBillingStore.persist.rehydrate()
+    
+    // Initialize with sample data if needed
+    setTimeout(() => {
+      initializeStoreData()
+    }, 100) // Small delay to ensure hydration completes first
   }
 }
 
