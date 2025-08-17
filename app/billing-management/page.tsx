@@ -53,6 +53,7 @@ import {
   Eye,
   Edit,
   Trash2,
+  Users,
 } from "lucide-react"
 
 interface Invoice {
@@ -78,19 +79,10 @@ export default function BillingPage() {
   const { customers, subscriptions } = useBillingStore()
   const { customer: currentCustomer } = useCurrentCustomer()
   
-  // Debug: Log when customers data changes
+  // Log customer data changes for verification
   useEffect(() => {
-    console.log('Billing Management - Customers updated:', customers)
-    console.log('Billing Management - Customer count:', customers.length)
-    if (customers.length > 0) {
-      console.log('Billing Management - First customer:', customers[0])
-    }
+    console.log('Billing Management - Customer data updated:', customers.length, 'customers')
   }, [customers])
-
-  // Debug: Log when current customer changes  
-  useEffect(() => {
-    console.log('Billing Management - Current customer updated:', currentCustomer)
-  }, [currentCustomer])
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false)
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -681,48 +673,48 @@ export default function BillingPage() {
           </CardContent>
         </Card>
 
-        {/* Customer Information Debug */}
+        {/* Customer Overview */}
         <Card className="mb-6">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Customer Information (Debug)</CardTitle>
-              <CardDescription>Real-time customer data from store - updates should reflect immediately</CardDescription>
-            </div>
-            <Button 
-              onClick={() => {
-                console.log('Force refresh - Current store state:', useBillingStore.getState())
-                // Force a re-render by triggering a state change
-                window.location.reload()
-              }}
-              variant="outline"
-              size="sm"
-            >
-              Force Refresh
-            </Button>
+          <CardHeader>
+            <CardTitle>Customer Overview</CardTitle>
+            <CardDescription>Active customer accounts and subscription information</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div>
-                <strong>Total Customers:</strong> {customers.length}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {customers.map((customer, index) => (
-                <div key={customer.id} className="p-4 border rounded-lg">
-                  <h4 className="font-semibold">Customer #{index + 1}</h4>
-                  <div className="grid grid-cols-2 gap-4 mt-2 text-sm">
-                    <div><strong>Name:</strong> {customer.name}</div>
-                    <div><strong>Email:</strong> {customer.email}</div>
-                    <div><strong>Phone:</strong> {customer.phone || 'N/A'}</div>
-                    <div><strong>Country:</strong> {customer.billing_address?.country || 'N/A'}</div>
-                    <div><strong>Status:</strong> {customer.status}</div>
-                    <div><strong>Plan:</strong> {customer.plan_type}</div>
+                <Card key={customer.id} className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold text-lg">{customer.name}</h4>
+                    <Badge variant={customer.status === 'active' ? 'default' : 'secondary'}>
+                      {customer.status}
+                    </Badge>
                   </div>
-                  <div className="text-xs text-gray-500 mt-2">
-                    Last Updated: {customer.updated_at ? new Date(customer.updated_at).toLocaleString() : 'Never'}
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Email:</span>
+                      <span>{customer.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Plan:</span>
+                      <span className="font-medium">{customer.plan_type}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Location:</span>
+                      <span>{customer.billing_address?.country || 'N/A'}</span>
+                    </div>
+                    {customer.phone && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Phone:</span>
+                        <span>{customer.phone}</span>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </Card>
               ))}
               {customers.length === 0 && (
-                <div className="text-gray-500 italic">No customers found in store</div>
+                <div className="col-span-full text-center text-gray-500 py-8">
+                  No customers found
+                </div>
               )}
             </div>
           </CardContent>
@@ -732,15 +724,15 @@ export default function BillingPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ₹{customers.reduce((sum, c) => sum + (c.total_spent || 0), 0).toLocaleString()}
+                {customers.length}
               </div>
               <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">+12.5%</span> from last month
+                Active customer accounts
               </p>
             </CardContent>
           </Card>
