@@ -325,54 +325,64 @@ export default function MyPlanPage() {
     }
   }
 
-  // Auto-create account for new StreamPlay users
+  // Handle StreamPlay integration for both new and existing users
   useEffect(() => {
     const email = searchParams?.get('email')
     const name = searchParams?.get('name')
     const streamplayId = searchParams?.get('streamplay_id')
     const source = searchParams?.get('source')
     const autoCreate = searchParams?.get('auto_create')
+    const returningUser = searchParams?.get('returning_user')
 
-    if (autoCreate === 'true' && email && name && !customer) {
-      // Create new customer account
-      const newCustomer = {
-        id: `cust_${Date.now()}`,
-        email: email,
-        name: name,
-        phone: searchParams?.get('phone') || '',
-        streamplay_id: streamplayId,
-        source: source || 'streamplay',
-        subscription_status: 'trial',
-        total_spent: 0,
-        created_at: new Date().toISOString(),
-        last_payment: null,
-        billing_address: {},
-        payment_methods: []
+    if (source === 'streamplay') {
+      if (returningUser === 'true' && customer) {
+        // EXISTING USER: Welcome back message
+        toast({
+          title: "Welcome back to StreamPlay!",
+          description: `Hi ${customer.name}! Manage your subscription and account settings below.`,
+          duration: 4000
+        })
+      } else if (autoCreate === 'true' && email && name && !customer) {
+        // NEW USER: Create account
+        const newCustomer = {
+          id: `cust_${Date.now()}`,
+          email: email,
+          name: name,
+          phone: searchParams?.get('phone') || '',
+          streamplay_id: streamplayId,
+          source: source || 'streamplay',
+          subscription_status: 'trial',
+          total_spent: 0,
+          created_at: new Date().toISOString(),
+          last_payment: null,
+          billing_address: {},
+          payment_methods: []
+        }
+
+        // Create trial subscription
+        const newSubscription = {
+          id: `sub_${Date.now()}`,
+          user_id: newCustomer.id,
+          plan_id: 'trial',
+          status: 'trial',
+          current_period_start: new Date().toISOString(),
+          current_period_end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days trial
+          price: 0,
+          currency: '₹',
+          billing_cycle: 'trial',
+          created_at: new Date().toISOString()
+        }
+
+        // Add to store
+        addCustomer(newCustomer)
+        addSubscription(newSubscription)
+
+        toast({
+          title: "Welcome to StreamPlay!",
+          description: `Hi ${name}! Your account has been created with a 7-day free trial.`,
+          duration: 5000
+        })
       }
-
-      // Create trial subscription
-      const newSubscription = {
-        id: `sub_${Date.now()}`,
-        user_id: newCustomer.id,
-        plan_id: 'trial',
-        status: 'trial',
-        current_period_start: new Date().toISOString(),
-        current_period_end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days trial
-        price: 0,
-        currency: '₹',
-        billing_cycle: 'trial',
-        created_at: new Date().toISOString()
-      }
-
-      // Add to store
-      addCustomer(newCustomer)
-      addSubscription(newSubscription)
-
-      toast({
-        title: "Welcome to StreamPlay!",
-        description: `Hi ${name}! Your account has been created with a 7-day free trial.`,
-        duration: 5000
-      })
     }
   }, [searchParams, customer, addCustomer, addSubscription, toast])
 

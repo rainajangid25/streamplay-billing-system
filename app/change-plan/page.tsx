@@ -178,7 +178,7 @@ export default function ChangePlanPage() {
 
       toast({
         title: "Welcome to StreamPlay!",
-        description: `Hi ${name}! Choose your plan to get started with StreamPlay.`,
+        description: `Hi ${name}! Choose your perfect plan to get started with StreamPlay.`,
         duration: 5000
       })
     }
