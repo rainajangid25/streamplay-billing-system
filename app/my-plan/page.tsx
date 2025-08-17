@@ -44,10 +44,7 @@ export default function MyPlanPage() {
     country: fullCustomer?.billing_address?.country || ''
   })
 
-  // Debug logging
-  console.log('Debug - customer:', customer)
-  console.log('Debug - fullCustomer:', fullCustomer)
-  console.log('Debug - isEditingProfile:', isEditingProfile)
+
 
   const [currentPlan] = useState({
     name: customer?.plan?.charAt(0).toUpperCase() + customer?.plan?.slice(1) || "Mega",
@@ -377,8 +374,8 @@ export default function MyPlanPage() {
           </div>
         </div>
 
-        {/* Profile Information Card - ALWAYS VISIBLE */}
-        <Card className="bg-white/10 backdrop-blur-lg border-white/20 text-white border-2 border-red-500">
+        {/* Profile Information Card */}
+        <Card className="bg-white/10 backdrop-blur-lg border-white/20 text-white">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -386,17 +383,17 @@ export default function MyPlanPage() {
                   {customer?.name?.charAt(0) || 'U'}
                 </div>
                 <div>
-                  <CardTitle className="text-xl text-white">🔥 DEBUG: Account Information</CardTitle>
-                  <CardDescription className="text-gray-300">Manage your profile details - EDIT PROFILE SHOULD BE HERE</CardDescription>
+                  <CardTitle className="text-xl text-white">Account Information</CardTitle>
+                  <CardDescription className="text-gray-300">Manage your profile details</CardDescription>
                 </div>
               </div>
               <Button
                 variant="outline"
                 onClick={() => setIsEditingProfile(!isEditingProfile)}
-                className="border-red-500 bg-red-500 text-white hover:bg-red-600 text-lg px-6 py-3"
+                className="border-white/30 text-white hover:bg-white/10"
               >
                 <Settings className="h-4 w-4 mr-2" />
-                🔥 {isEditingProfile ? 'Cancel Edit' : 'EDIT PROFILE'}
+                {isEditingProfile ? 'Cancel' : 'Edit Profile'}
               </Button>
             </div>
           </CardHeader>
