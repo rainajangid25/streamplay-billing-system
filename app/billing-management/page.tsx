@@ -626,99 +626,150 @@ export default function BillingPage() {
           </CardContent>
         </Card>
 
+        {/* Comprehensive Customer & Billing Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Invoices</CardTitle>
-            <CardDescription>Overview of all generated invoices</CardDescription>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Customer & Billing Management</CardTitle>
+                <CardDescription>Comprehensive view of customers, subscriptions, and billing status</CardDescription>
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+                <Dialog open={isCreateInvoiceOpen} onOpenChange={setIsCreateInvoiceOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Invoice
+                    </Button>
+                  </DialogTrigger>
+                </Dialog>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Invoice ID</TableHead>
                   <TableHead>Customer</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Plan & Status</TableHead>
+                  <TableHead>Subscription</TableHead>
+                  <TableHead>Last Invoice</TableHead>
+                  <TableHead>Total Spent</TableHead>
+                  <TableHead>Next Billing</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {invoices.map((invoice) => (
-                  <TableRow key={invoice.id}>
-                    <TableCell className="font-medium">{invoice.id}</TableCell>
-                    <TableCell>{invoice.customer}</TableCell>
-                    <TableCell>{invoice.amount}</TableCell>
-                    <TableCell>{invoice.dueDate}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(invoice.status)}>{invoice.status}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm" onClick={() => handleViewInvoice(invoice)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleEditInvoice(invoice)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleDeleteInvoice(invoice)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                {customers.map((customer) => {
+                  const customerSubscription = subscriptions.find(s => s.user_id === customer.id)
+                  const customerInvoices = invoices.filter(i => i.customer === customer.name)
+                  const lastInvoice = customerInvoices[0] // Assuming sorted by date
+                  
+                  return (
+                    <TableRow key={customer.id}>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{customer.name}</div>
+                          <div className="text-sm text-gray-500">{customer.email}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <div>{customer.phone || 'N/A'}</div>
+                          <div className="text-gray-500">{customer.billing_address?.country || 'N/A'}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <Badge variant={customer.status === 'active' ? 'default' : 'secondary'} className="mb-1">
+                            {customer.status}
+                          </Badge>
+                          <div className="text-sm font-medium">{customer.plan_type}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {customerSubscription ? (
+                          <div className="text-sm">
+                            <div className="font-medium">₹{customerSubscription.amount}</div>
+                            <div className="text-gray-500">{customerSubscription.billing_cycle}</div>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-gray-500">No subscription</div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {lastInvoice ? (
+                          <div className="text-sm">
+                            <div className="font-medium">{lastInvoice.id}</div>
+                            <Badge variant={
+                              lastInvoice.status === 'paid' ? 'default' :
+                              lastInvoice.status === 'pending' ? 'secondary' :
+                              'destructive'
+                            } className="text-xs">
+                              {lastInvoice.status}
+                            </Badge>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-gray-500">No invoices</div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">₹{customer.total_spent || 0}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          {customerSubscription ? (
+                            <div>{customerSubscription.end_date || 'N/A'}</div>
+                          ) : (
+                            <div className="text-gray-500">-</div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              // View customer details
+                              console.log('View customer:', customer.id)
+                            }}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              setIsCreateInvoiceOpen(true)
+                              // Pre-fill with customer data
+                            }}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+                {customers.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center text-gray-500 py-8">
+                      No customers found
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </CardContent>
         </Card>
 
-        {/* Customer Overview */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Customer Overview</CardTitle>
-            <CardDescription>Active customer accounts and subscription information</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {customers.map((customer, index) => (
-                <Card key={customer.id} className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-lg">{customer.name}</h4>
-                    <Badge variant={customer.status === 'active' ? 'default' : 'secondary'}>
-                      {customer.status}
-                    </Badge>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Email:</span>
-                      <span>{customer.email}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Plan:</span>
-                      <span className="font-medium">{customer.plan_type}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Location:</span>
-                      <span>{customer.billing_address?.country || 'N/A'}</span>
-                    </div>
-                    {customer.phone && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Phone:</span>
-                        <span>{customer.phone}</span>
-                      </div>
-                    )}
-                  </div>
-                </Card>
-              ))}
-              {customers.length === 0 && (
-                <div className="col-span-full text-center text-gray-500 py-8">
-                  No customers found
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+
 
         {/* Billing Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -811,16 +862,7 @@ export default function BillingPage() {
           </CardContent>
         </Card>
 
-        {/* Main Billing Tabs */}
-        <Tabs defaultValue="invoices" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="invoices">Invoices</TabsTrigger>
-            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-            <TabsTrigger value="payments">Payments</TabsTrigger>
-            <TabsTrigger value="automation">Automation</TabsTrigger>
-          </TabsList>
 
-          <TabsContent value="invoices" className="space-y-6">
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
