@@ -7,9 +7,11 @@ import { Badge } from '@/components/ui/badge'
 import { Crown, Check, Star, Smartphone, Tv, Laptop, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useCurrentCustomer } from '@/lib/store'
 
 export default function ChangePlanPage() {
   const router = useRouter()
+  const { customer } = useCurrentCustomer()
   const [selectedPlan, setSelectedPlan] = useState('mega')
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
 
@@ -115,8 +117,15 @@ export default function ChangePlanPage() {
     const plan = plans.find(p => p.id === selectedPlan)
     const { price } = getPrice(plan!)
     
-    // Navigate to billing management page with plan details
-    router.push(`/billing-management?plan=${selectedPlan}&price=${price}&billing=${billingCycle}`)
+    // Get customer ID, fallback to default if not available
+    const customerId = customer?.id || 'user-123'
+    
+    const redirectUrl = `/customer-billing/${customerId}?plan=${selectedPlan}&price=${price}&billing=${billingCycle}`
+    console.log('Change Plan: Redirecting to:', redirectUrl)
+    console.log('Plan details:', { selectedPlan, price, billingCycle, customerId })
+    
+    // Navigate to customer billing page with plan details for checkout
+    router.push(redirectUrl)
   }
 
   return (
