@@ -57,8 +57,7 @@ export const emailTemplates: EmailTemplate[] = [
   }
 ]
 
-// Missing export alias
-export const emailService = new EmailClient()
+// Note: EmailClient class defined below, instance exported at end of file
 
 export class EmailClient {
   static async sendEmail(notification: EmailNotification): Promise<boolean> {

@@ -109,7 +109,7 @@ export default function BillingPage() {
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
 
-  const [subscriptions] = useState([
+  const [localSubscriptions] = useState([
     {
       id: "SUB-001",
       customer: "John Smith",
@@ -885,7 +885,7 @@ export default function BillingPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {subscriptions.map((subscription) => (
+                    {localSubscriptions.map((subscription) => (
                       <TableRow key={subscription.id}>
                         <TableCell className="font-medium">{subscription.id}</TableCell>
                         <TableCell>{subscription.customer}</TableCell>
