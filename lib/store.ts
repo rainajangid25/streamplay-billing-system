@@ -11,9 +11,11 @@ export interface User {
 
 export interface AppState {
   user: User | null
+  currentUserId: string | null // Track which customer is the current user
   isLoading: boolean
   error: string | null
   setUser: (user: User | null) => void
+  setCurrentUserId: (userId: string | null) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
   clearError: () => void
@@ -21,9 +23,11 @@ export interface AppState {
 
 export const useAppStore = create<AppState>((set) => ({
   user: null,
+  currentUserId: 'cust_001', // Default to first sample customer
   isLoading: false,
   error: null,
   setUser: (user) => set({ user }),
+  setCurrentUserId: (currentUserId) => set({ currentUserId }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
@@ -220,17 +224,49 @@ export const useBillingStore = create<BillingState>((set, get) => ({
   }
 }))
 
-// Missing export for customer data
-export const useCustomerData = () => {
-  const user = useAppStore(state => state.user)
+// Unified customer data hook - connects current user to billing store
+export const useCurrentCustomer = () => {
+  const { currentUserId } = useAppStore()
+  const { customers, updateCustomer } = useBillingStore()
   
-  // Return a default user object if none exists to prevent null access errors
-  return user || {
+  // Find current customer in billing store
+  const currentCustomer = customers.find(c => c.id === currentUserId)
+  
+  // Return customer with update function
+  return {
+    customer: currentCustomer || null,
+    updateCustomer: (updates: any) => {
+      if (currentUserId) {
+        updateCustomer(currentUserId, updates)
+      }
+    },
+    isLoading: false
+  }
+}
+
+// Legacy hook for backward compatibility
+export const useCustomerData = () => {
+  const { customer } = useCurrentCustomer()
+  const { subscriptions } = useBillingStore()
+  
+  // Find customer's subscription
+  const customerSubscription = customer ? subscriptions.find(s => s.user_id === customer.id) : null
+  
+  // Return customer data formatted for legacy components
+  return customer ? {
+    id: customer.id,
+    email: customer.email,
+    name: customer.name,
+    subscription_status: customer.status === 'active' ? 'active' as const : 'cancelled' as const,
+    plan: customer.plan?.toLowerCase() || 'basic',
+    subscription_end_date: customerSubscription?.end_date || '29/08/2025',
+    wallet_address: undefined
+  } : {
     id: 'demo-user',
     email: 'demo@streamplay.com',
     name: 'Demo User',
     subscription_status: 'active' as const,
-    plan: 'mega',
+    plan: 'basic',
     subscription_end_date: '29/08/2025',
     wallet_address: undefined
   }

@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { SubscriptionService } from '@/lib/subscription'
 import { emailService } from '@/lib/email-client'
-import { useBillingStore, useCustomerData } from '@/lib/store'
+import { useBillingStore, useCustomerData, useCurrentCustomer } from '@/lib/store'
 import {
   Dialog,
   DialogContent,
@@ -29,19 +29,21 @@ export default function MyPlanPage() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
   const customer = useCustomerData()
-  const isLoading = false // Mock loading state
+  const { customer: fullCustomer, updateCustomer, isLoading } = useCurrentCustomer()
   const { updateSubscription, subscriptions, customers, addCustomer, addSubscription } = useBillingStore()
-  
-  // Mock updateCustomer function
-  const updateCustomer = async (id: string, updates: any) => {
-    console.log('Updating customer:', id, updates)
-    // In a real app, this would update the customer data
-    return Promise.resolve()
-  }
   
   // Get current subscription data
   const currentSubscription = subscriptions.find(sub => sub.user_id === customer?.id)
   
+  // Profile editing state
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const [profileForm, setProfileForm] = useState({
+    name: customer?.name || '',
+    email: customer?.email || '',
+    phone: fullCustomer?.phone || '',
+    country: fullCustomer?.billing_address?.country || ''
+  })
+
   const [currentPlan] = useState({
     name: customer?.plan?.charAt(0).toUpperCase() + customer?.plan?.slice(1) || "Mega",
     price: `₹${currentSubscription?.amount || 399}`,
@@ -61,6 +63,46 @@ export default function MyPlanPage() {
   const [isTicketDialogOpen, setIsTicketDialogOpen] = useState(false)
   const [pauseReason, setPauseReason] = useState('')
   const [cancelReason, setCancelReason] = useState('')
+
+  // Profile update function
+  const handleProfileUpdate = async () => {
+    try {
+      await updateCustomer({
+        name: profileForm.name,
+        email: profileForm.email,
+        phone: profileForm.phone,
+        billing_address: {
+          ...(fullCustomer?.billing_address || {}),
+          country: profileForm.country
+        }
+      })
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile information has been updated successfully. Changes will reflect across all pages.",
+      })
+      
+      setIsEditingProfile(false)
+    } catch (error) {
+      toast({
+        title: "Update Failed",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive"
+      })
+    }
+  }
+
+  // Update form when customer data changes
+  useEffect(() => {
+    if (customer && fullCustomer) {
+      setProfileForm({
+        name: customer.name || '',
+        email: customer.email || '',
+        phone: fullCustomer.phone || '',
+        country: fullCustomer.billing_address?.country || ''
+      })
+    }
+  }, [customer, fullCustomer])
   const [isProcessing, setIsProcessing] = useState(false)
   const [ticketSubject, setTicketSubject] = useState('')
   const [ticketMessage, setTicketMessage] = useState('')
@@ -329,6 +371,112 @@ export default function MyPlanPage() {
             </Badge>
           </div>
         </div>
+
+        {/* Profile Information Card */}
+        <Card className="bg-white/10 backdrop-blur-lg border-white/20 text-white">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                  {customer?.name?.charAt(0) || 'U'}
+                </div>
+                <div>
+                  <CardTitle className="text-xl text-white">Account Information</CardTitle>
+                  <CardDescription className="text-gray-300">Manage your profile details</CardDescription>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setIsEditingProfile(!isEditingProfile)}
+                className="border-white/30 text-white hover:bg-white/10"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                {isEditingProfile ? 'Cancel' : 'Edit Profile'}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {isEditingProfile ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-white">Full Name</Label>
+                  <Input
+                    value={profileForm.name}
+                    onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                    className="bg-white/10 border-white/30 text-white placeholder-gray-400"
+                    placeholder="Enter your name"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Email Address</Label>
+                  <Input
+                    value={profileForm.email}
+                    onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                    className="bg-white/10 border-white/30 text-white placeholder-gray-400"
+                    placeholder="Enter your email"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Phone Number</Label>
+                  <Input
+                    value={profileForm.phone}
+                    onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                    className="bg-white/10 border-white/30 text-white placeholder-gray-400"
+                    placeholder="Enter your phone"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white">Country</Label>
+                  <Input
+                    value={profileForm.country}
+                    onChange={(e) => setProfileForm({...profileForm, country: e.target.value})}
+                    className="bg-white/10 border-white/30 text-white placeholder-gray-400"
+                    placeholder="Enter your country"
+                  />
+                </div>
+                <div className="md:col-span-2 flex justify-end space-x-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditingProfile(false)}
+                    className="border-white/30 text-white hover:bg-white/10"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleProfileUpdate}
+                    disabled={isLoading}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  >
+                    {isLoading ? 'Updating...' : 'Save Changes'}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-gray-400 text-sm">Full Name</Label>
+                    <p className="text-white font-medium">{customer?.name || 'Not provided'}</p>
+                  </div>
+                  <div>
+                    <Label className="text-gray-400 text-sm">Email Address</Label>
+                    <p className="text-white font-medium">{customer?.email || 'Not provided'}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-gray-400 text-sm">Phone Number</Label>
+                    <p className="text-white font-medium">{fullCustomer?.phone || 'Not provided'}</p>
+                  </div>
+                  <div>
+                    <Label className="text-gray-400 text-sm">Country</Label>
+                    <p className="text-white font-medium">{fullCustomer?.billing_address?.country || 'Not provided'}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Current Plan Card */}
         <Card className="bg-white/10 backdrop-blur-lg border-white/20 text-white">
