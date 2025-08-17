@@ -1,16 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-
-/* Basic CSS reset and utilities */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer base {
@@ -70,14 +64,14 @@ body {
   }
 }
 
-/* Base styles without TailwindCSS directives */
-* {
-  border-color: hsl(var(--border));
-}
-body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-feature-settings: "rlig" 1, "calt" 1;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
 
 /* Enhanced scrollbar styling */
@@ -226,88 +220,4 @@ body {
   border-left: 3px solid #3b82f6;
 }
 
-/* Essential utility classes */
-.bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
-.from-slate-50 { --tw-gradient-from: #f8fafc; --tw-gradient-to: rgb(248 250 252 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
-.to-slate-100 { --tw-gradient-to: #f1f5f9; }
-.bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
-.from-blue-500 { --tw-gradient-from: #3b82f6; --tw-gradient-to: rgb(59 130 246 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
-.to-blue-600 { --tw-gradient-to: #2563eb; }
-.from-purple-500 { --tw-gradient-from: #8b5cf6; --tw-gradient-to: rgb(139 92 246 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
-.to-purple-600 { --tw-gradient-to: #7c3aed; }
-.text-white { color: #ffffff; }
-.text-gray-900 { color: #111827; }
-.text-gray-600 { color: #4b5563; }
-.font-bold { font-weight: 700; }
-.p-6 { padding: 1.5rem; }
-.pb-2 { padding-bottom: 0.5rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-8 { margin-bottom: 2rem; }
-.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
-.text-2xl { font-size: 1.5rem; line-height: 2rem; }
-.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-.text-xs { font-size: 0.75rem; line-height: 1rem; }
-.min-h-full { min-height: 100%; }
-.h-full { height: 100%; }
-.h-4 { height: 1rem; }
-.h-5 { height: 1.25rem; }
-.w-4 { width: 1rem; }
-.w-5 { width: 1.25rem; }
-.w-full { width: 100%; }
-.flex { display: flex; }
-.flex-1 { flex: 1 1 0%; }
-.flex-col { flex-direction: column; }
-.min-h-screen { min-height: 100vh; }
-.grid { display: grid; }
-.gap-2 { gap: 0.5rem; }
-.gap-4 { gap: 1rem; }
-.gap-6 { gap: 1.5rem; }
-.max-w-7xl { max-width: 80rem; }
-.mx-auto { margin-left: auto; margin-right: auto; }
-.items-center { align-items: center; }
-.font-medium { font-weight: 500; }
-.opacity-90 { opacity: 0.9; }
-.opacity-75 { opacity: 0.75; }
-.mt-2 { margin-top: 0.5rem; }
-.mr-1 { margin-right: 0.25rem; }
-.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-.flex-1 { flex: 1 1 0%; }
-.overflow-auto { overflow: auto; }
-
-/* Layout and container classes */
-.container { 
-  width: 100%; 
-  margin-left: auto; 
-  margin-right: auto; 
-  padding-left: 1rem; 
-  padding-right: 1rem; 
-}
-.mx-auto { margin-left: auto; margin-right: auto; }
-.max-w-full { max-width: 100%; }
-
-/* Responsive grid classes */
-@media (min-width: 768px) {
-  .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .container { padding-left: 1.5rem; padding-right: 1.5rem; }
-}
-
-@media (min-width: 1024px) {
-  .lg\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .container { padding-left: 2rem; padding-right: 2rem; }
-}
-
-@media (min-width: 1280px) {
-  .container { max-width: 1280px; }
-}
-
-/* Override sidebar constraints for better layout */
-[data-sidebar="inset"] {
-  width: 100% !important;
-  max-width: none !important;
-}
-
-/* Ensure main content takes full available space */
-main[data-sidebar="inset"] {
-  width: 100% !important;
-  flex: 1 !important;
-}
+/* TailwindCSS will handle all utility classes */
